@@ -1,0 +1,231 @@
+---
+const pathname = Astro.url.pathname;
+const isHome = pathname === "/" || pathname === "/index.html";
+---
+
+<div
+    id="nav-container"
+    class="fixed bottom-4 md:bottom-10 left-1/2 -translate-x-1/2 transition-all duration-700 ease-in-out flex justify-between items-center h-12 md:h-24 w-[90%] md-custom:w-3/5 lg:w-3/5 xl:w-2/5 bg-[#a4a4a400] backdrop-blur-lg shadow-lg text-darkRed text-sm md:text-3xl rounded-full z-500 mx-auto overflow-visible"
+>
+    <div
+        class="absolute inset-0 rounded-full p-px pointer-events-none mask-[linear-gradient(to_bottom_left,black_40%,transparent_50%),linear-gradient(to_top_right,black_40%,transparent_50%)]"
+    >
+        <div class="absolute inset-0 rounded-full border border-white/60"></div>
+    </div>
+
+    <div
+        id="active-indicator"
+        class={`absolute top-0 left-0 h-full w-1/2 md:w-1/3 transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] pointer-events-none z-0 scale-102 ${isHome ? "opacity-100" : "opacity-0"}`}
+    >
+        <div
+            class="w-full h-full bg-[#d9d9d90f] backdrop-blur-xl rounded-full shadow-[0px_10px_15px_-3px_rgba(0,0,0,0.2),inset_0_4px_6px_rgba(255,255,255,0.15)]"
+        >
+            <div
+                class="absolute inset-0 rounded-full p-px mask-[linear-gradient(to_right,black_0%,black_20%,transparent_95%)]"
+            >
+                <div
+                    class="absolute inset-0 rounded-full border border-white/75"
+                >
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <button
+        data-index="0"
+        class="hidden md:block nav-btn relative z-10 tracking-wide flex-1 h-full transition-opacity duration-500"
+    >
+        Home
+    </button>
+    <button
+        data-index="1"
+        class="nav-btn relative z-10 tracking-wide flex-1 h-full transition-opacity duration-500"
+    >
+        Categories
+    </button>
+    <button
+        data-index="2"
+        class="nav-btn relative z-10 tracking-wide flex-1 h-full transition-opacity duration-500"
+    >
+        Most Popular
+    </button>
+</div>
+
+<style>
+    button:hover {
+        cursor: pointer;
+    }
+</style>
+<script>
+    const navContainer = document.getElementById("nav-container");
+    const indicator = document.getElementById("active-indicator");
+    const buttons = document.querySelectorAll(".nav-btn");
+
+    const sectionMapping = {
+        "0": "home",
+        "1": "categories",
+        "2": "most-popular", // Most Popular component ID
+    };
+
+    const currentPath = window.location.pathname;
+    const isHomePage = currentPath === "/" || currentPath === "/index.html";
+
+    // Actualiza dinámicamente el desplazamento basándose solo en los botones visibles
+    function updateIndicator(targetIndexStr) {
+        if (!indicator) return;
+
+        let visualIndex = null;
+        let visibleCount = 0;
+
+        buttons.forEach((b) => {
+            if (window.getComputedStyle(b).display !== "none") {
+                if (b.getAttribute("data-index") === targetIndexStr) {
+                    visualIndex = visibleCount;
+                }
+                visibleCount++;
+            }
+        });
+
+        // Si el botón está desactivado en la vista actual (ej. Home en mobile) o no existe, oculta y aborta
+        if (visualIndex === null) {
+            indicator.classList.remove("opacity-100");
+            indicator.classList.add("opacity-0");
+            return;
+        }
+
+        indicator.classList.remove("opacity-0");
+        indicator.classList.add("opacity-100");
+        indicator.style.transform = `translateX(${visualIndex * 98}%)`;
+    }
+
+    function updateBarTheme(targetIndexStr) {
+        if (!navContainer) return;
+        // '1' corresponds to the categories section 
+        if (targetIndexStr === "1") {
+            navContainer.classList.remove("bg-[#a4a4a400]", "text-darkRed");
+            navContainer.classList.add("bg-[#2D1B15]/60", "text-[#EBE6E0]"); // Oscurecimiento glass cálido y texto claro
+        } else {
+            navContainer.classList.remove("bg-[#2D1B15]/60", "text-[#EBE6E0]");
+            navContainer.classList.add("bg-[#a4a4a400]", "text-darkRed");
+        }
+    }
+
+    let isScrollingViaClick = false;
+    let scrollTimeout = null;
+
+    // 1. Scroll directly to sections on click
+    buttons.forEach((btn) => {
+        btn.addEventListener("click", () => {
+            const index = btn.getAttribute("data-index");
+            if (!index) return;
+
+            const targetId =
+                sectionMapping[index as keyof typeof sectionMapping];
+
+            if (!isHomePage) {
+                // Redirect user to the home page at the specific anchor
+                window.location.href = `/#${targetId}`;
+                return;
+            }
+
+            // Actualizar estilo visual manual temporalmente y pausar observer
+            isScrollingViaClick = true;
+            if (scrollTimeout) clearTimeout(scrollTimeout);
+            scrollTimeout = setTimeout(() => {
+                isScrollingViaClick = false;
+            }, 1200);
+
+            updateIndicator(index);
+            updateBarTheme(index);
+
+            const targetSection = document.getElementById(targetId);
+
+            if (targetSection) {
+                targetSection.scrollIntoView({ behavior: "smooth" });
+            }
+        });
+    });
+
+    if (isHomePage) {
+        // 2. Intersection Observer to detect scroll position
+        const observerOptions = {
+            root: null,
+            rootMargin: "0px",
+            threshold: 0.4, // Update when at least 40% of standard sections are in view
+        };
+
+        let visibleSections = new Set();
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                    visibleSections.add(entry.target.id);
+                } else {
+                    visibleSections.delete(entry.target.id);
+                }
+            });
+
+            if (visibleSections.size === 0) {
+                if (indicator && !isScrollingViaClick) {
+                    indicator.classList.remove("opacity-100");
+                    indicator.classList.add("opacity-0");
+                }
+            } else {
+                if (isScrollingViaClick) return;
+
+                // Toma la más reciente que haya entrado al viewport
+                const topVisibleId = Array.from(visibleSections).pop();
+                let foundIndex = null;
+                for (const [idx, id] of Object.entries(sectionMapping)) {
+                    if (id === topVisibleId) {
+                        foundIndex = idx;
+                        break;
+                    }
+                }
+
+                if (foundIndex !== null) {
+                    updateIndicator(foundIndex);
+                    updateBarTheme(foundIndex);
+                }
+            }
+        }, observerOptions);
+
+        // Observer attachments
+        Object.values(sectionMapping).forEach((id) => {
+            const el = document.getElementById(id);
+            if (el) observer.observe(el);
+        });
+    }
+
+    // 3. Footer Observer for global graceful hiding
+    const footerElement = document.getElementById("footer");
+    if (footerElement && navContainer) {
+        const footerObserverOptions = {
+            root: null,
+            rootMargin: "0px",
+            threshold: 0.1, // 10% of the footer
+        };
+
+        const footerObserver = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                    navContainer.classList.add(
+                        "opacity-0",
+                        "translate-y-10",
+                        "pointer-events-none",
+                        "scale-95",
+                    );
+                } else {
+                    navContainer.classList.remove(
+                        "opacity-0",
+                        "translate-y-10",
+                        "pointer-events-none",
+                        "scale-95",
+                    );
+                }
+            });
+        }, footerObserverOptions);
+
+        footerObserver.observe(footerElement);
+    }
+</script>

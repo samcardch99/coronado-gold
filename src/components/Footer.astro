@@ -1,0 +1,171 @@
+---
+import Logo from "../assets/logo_large.svg";
+import Phone from "../assets/phone.svg";
+import Mail from "../assets/mail.svg";
+import Location from "../assets/location.svg";
+import Form from "./helpers/Form.jsx";
+import Borsoga from "../assets/borsoga/logo.svg";
+import Instagram from "../assets/instagram.svg";
+import Facebook from "../assets/facebook.svg";
+import LinkedIn from "../assets/linkedin.svg";
+---
+
+<section
+    id="footer"
+    class="min-h-screen md:h-screen md:min-h-[700px] lg:min-h-[600px] border-t-[0.5px] z-300 border-darkRed text-darkRed bg-[#CDC9C3] w-full relative px-8 md:px-16 lg:px-20 pt-32 md:pt-44 lg:pb-32 flex flex-col gap-14 md:gap-32 md:justify-end lg:justify-center duration-300"
+>
+    <div
+        class="flex flex-col md-vertical:flex-col lg:flex-row justify-normal gap-16 lg:gap-7 md:justify-between text-base md:h-[65%] lg:h-auto"
+    >
+        <div
+            class="flex flex-col gap-4 md:gap-10 lg:gap-16 order-1 w-full md:w-auto
+           text-[clamp(0.7rem,3.2vw,1.2rem)] md:text-3xl lg:text-2xl"
+        >
+            <div class="flex gap-2 md:gap-8 lg:gap-8 items-center shrink-0">
+                <Phone
+                    class="h-[1.2em] w-[1.2em] md:h-12 md:w-12 lg:h-8 w-8 shrink-0"
+                />
+                <a
+                    class="underline underline-offset-8 whitespace-nowrap"
+                    href="tel:7863677012"
+                    target="_blank"
+                    rel="noopener noreferrer">(786) 367-7012</a
+                >
+            </div>
+
+            <div class="flex gap-2 md:gap-8 lg:gap-8 items-center shrink-0">
+                <Mail
+                    class="h-[1.2em] w-[1.2em] md:h-12 md:w-12 lg:h-8 w-8 shrink-0"
+                />
+                <a
+                    class="underline underline-offset-8 whitespace-nowrap"
+                    href="mailto:coronadogoldjewelry@gmail.com"
+                    target="_blank"
+                    rel="noopener noreferrer">coronadogoldjewelry@gmail.com</a
+                >
+            </div>
+
+            <div class="flex gap-2 md:gap-8 lg:gap-8 items-center shrink-0">
+                <Location
+                    class="h-[1.2em] w-[1.2em] md:h-12 md:w-12 lg:h-8 w-8 shrink-0"
+                />
+                <a
+                    class="underline underline-offset-8 whitespace-nowrap"
+                    href="https://maps.app.goo.gl/saCvgTfbbfDyzSBWA"
+                    target="_blank"
+                    rel="noopener noreferrer">49 W 3rd St Hialeah Fl 33010</a
+                >
+            </div>
+        </div>
+        <div
+            class="flex flex-col items-center lg:items-start gap-4 md:gap-10 lg:gap-16 text-sm md:text-4xl lg:text-2xl order-3 lg:order-2 self-center lg:self-auto"
+        >
+            <div class="flex gap-2 lg:gap-8 items-center">
+                <a
+                    class="underline underline-offset-8 lg:no-underline"
+                    href="/privacy-policy"
+                    target="_blank"
+                    rel="noopener noreferrer">Privacy Policy</a
+                >
+            </div>
+            <div
+                class="flex flex-col gap-4 md:gap-8 lg:gap-4 items-center lg:items-start"
+            >
+                <h3 class="">Follow us</h3>
+                <div class="flex gap-2 md:gap-8 lg:gap-8 items-center">
+                    <a
+                        class="underline underline-offset-8"
+                        href="instagram.com"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        ><Instagram class="h-8 md:h-12 lg:h-14 w-14" /></a
+                    >
+
+                    <a
+                        href="facebook.com"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        ><Facebook class="h-8 md:h-12 lg:h-14 w-14" /></a
+                    >
+
+                    <a
+                        class="underline underline-offset-8"
+                        href="linkedin.com"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        ><LinkedIn class="h-8 md:h-12 lg:h-14 w-14" /></a
+                    >
+                </div>
+            </div>
+        </div>
+
+        <div class="order-2 lg:order-3">
+            <Form client:visible className="text-darkRed w-full" />
+        </div>
+    </div>
+
+    <div
+        id="logo-container"
+        class="flex flex-col gap-3 md:gap-10 mb-12 lg:gap-6 lg:absolute lg:bottom-10 lg:left-0 lg:px-20 w-full"
+    >
+        <Logo class="w-full h-auto" />
+        <a
+            href="https://www.instagram.com/borsogabrandlab"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="flex gap-2 items-center justify-center lg:justify-end w-full"
+        >
+            <p
+                class="whitespace-nowrap text-[clamp(0.6rem,2.5vw,1.5rem)] md:text-2xl lg:text-xl shrink-0"
+            >
+                This website was designed by
+            </p>
+            <Borsoga
+                class="w-[20vw] max-w-[150px] md:w-56 lg:w-52 lg:pb-[0.2rem] text-darkRed shrink-0"
+            />
+        </a>
+    </div>
+</section>
+
+<!-- <script>
+    const initResize = () => {
+        // Seleccionamos el textarea por su atributo name o id
+        const textarea = document.querySelector(
+            'textarea[name="message"]',
+        ) as HTMLTextAreaElement;
+
+        if (!textarea) return;
+
+        const resizeIt = () => {
+            // Resetear altura para recalcular
+            textarea.style.height = "auto";
+
+            // Definimos el alto de una línea (ajusta según tu diseño)
+            // 24px es común para un texto de ~16px con line-height normal
+            const lineHeight = 24;
+            const maxRows = 3;
+            const maxHeight = lineHeight * maxRows;
+
+            // Calculamos la nueva altura
+            const newHeight = Math.min(textarea.scrollHeight, maxHeight);
+
+            textarea.style.height = `${newHeight}px`;
+
+            // Mostramos scroll solo si supera las 3 líneas
+            textarea.style.overflowY =
+                textarea.scrollHeight > maxHeight ? "auto" : "hidden";
+        };
+
+        // Escuchamos el evento de entrada de texto
+        textarea.addEventListener("input", resizeIt);
+
+        // Ejecución inicial por si hay texto por defecto
+        resizeIt();
+    };
+
+    // Astro ejecuta scripts en la carga inicial
+    initResize();
+
+    // Importante: Si usas View Transitions, necesitamos reinicializar al navegar
+    document.addEventListener("astro:page-load", initResize);
+</script> -->

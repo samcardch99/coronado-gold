@@ -1,0 +1,36 @@
+{
+  "name": "coronado-gold",
+  "type": "module",
+  "version": "0.0.1",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/check": "^0.9.8",
+    "@astrojs/react": "^5.0.3",
+    "@emailjs/browser": "^4.4.1",
+    "@hookform/resolvers": "^5.2.2",
+    "@tailwindcss/vite": "^4.2.2",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "astro": "^6.1.1",
+    "gsap": "^3.14.2",
+    "lenis": "^1.3.21",
+    "nvm": "^0.0.4",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "react-hook-form": "^7.72.1",
+    "sonner": "^2.0.7",
+    "swiper": "^12.1.3",
+    "tailwindcss": "^4.2.2",
+    "typescript": "^5.9.3",
+    "zod": "^4.3.6"
+  }
+ 
+}

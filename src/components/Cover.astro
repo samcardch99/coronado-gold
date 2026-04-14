@@ -1,0 +1,25 @@
+---
+import { Image } from "astro:assets";
+import coverBg from "../assets/cover-bg.jpg";
+import coverBgMobile from "../assets/cover-bg-mobile.jpg";
+---
+
+<section
+    id="home"
+    class="relative w-full h-screen overflow-hidden bg-linear-to-b from-[#CEC8C3] from-70% to-[#D8D0C7] flex items-end justify-center"
+>
+    <Image
+        src={coverBg}
+        alt="cover Background"
+        class="hidden md:block absolute object-cover h-full pt-16"
+        quality={100}
+        width={1920}
+        height={1080}
+    />
+    <Image
+        src={coverBgMobile}
+        alt="cover Background"
+        class="md:hidden absolute inset-0 top-1/2 -translate-y-1/2 object-contain w-full object-center"
+        quality={100}
+    />
+</section>

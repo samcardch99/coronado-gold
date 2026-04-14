@@ -1,0 +1,343 @@
+---
+import CrystalButton from "./helpers/CrystalButton.astro";
+
+const SHOPIFY_DOMAIN = import.meta.env.SHOPIFY_DOMAIN;
+const STOREFRONT_ACCESS_TOKEN = import.meta.env.STOREFRONT_ACCESS_TOKEN;
+
+const query = `
+  query getProductsByCollection {
+    collection(handle: "rings") {
+      products(first: 8) {
+        edges {
+          node {
+            id
+            title
+            handle
+            priceRange {
+              minVariantPrice {
+                amount
+                currencyCode
+              }
+            }
+            images(first: 1) {
+              edges {
+                node {
+                  url
+                  altText
+                }
+              }
+            }
+            hoverImage: metafield(namespace: "custom", key: "hover_image") {
+              reference {
+                ... on MediaImage {
+                  image {
+                    url
+                    altText
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+
+const response = await fetch(
+    `https://${SHOPIFY_DOMAIN}/api/2024-01/graphql.json`,
+    {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-Shopify-Storefront-Access-Token": STOREFRONT_ACCESS_TOKEN,
+        },
+        body: JSON.stringify({ query }),
+    },
+);
+
+const json = await response.json();
+
+// Debug: muestra en consola la respuesta de Shopify al compilar
+console.log(
+    "[MostPopular] Shopify response:",
+    JSON.stringify(json?.data, null, 2),
+);
+
+const products = json.data?.collection?.products?.edges || [];
+---
+
+<section
+    id="most-popular"
+    class="relative w-full h-screen min-h-150 md:min-h-300 bg-bone overflow-hidden flex flex-col justify-center"
+    data-products={JSON.stringify(products)}
+>
+    <div
+        class="w-full h-full md:min-h-250 min-h-100 max-h-[70%] md:max-h-[70%] xl:max-h-[60%] 2xl:max-h-3/4 flex flex-col items-center justify-between"
+    >
+        <h2
+            class="text-3xl md-custom:text-5xl md:text-8xl lg:text-7xl text-darkRed tracking-widest z-10"
+        >
+            Most Popular
+        </h2>
+
+        <div
+            class="swiper swiper-popular w-full md-custom:w-[90%] md:w-4/5 lg:w-4/5"
+        >
+            <div class="swiper-wrapper flex items-center">
+                {
+                    products.map(({ node: product }) => (
+                        <div class="swiper-slide flex items-center justify-center aspect-square ">
+                            <a
+                                href={`/products/${product.handle}`}
+                                class="block w-full relative group h-full rounded-full flex items-center justify-center transition-all duration-700 image-container cursor-pointer"
+                            >
+                                {product.hoverImage?.reference?.image?.url && (
+                                    <img
+                                        src={
+                                            product.hoverImage.reference.image
+                                                .url
+                                        }
+                                        alt={
+                                            product.hoverImage.reference.image
+                                                .altText || product.title
+                                        }
+                                        class="absolute inset-0 w-full aspect-square h-full object-cover object-center opacity-0 group-hover:opacity-100 transition-opacity duration-500 ease-in-out z-10"
+                                    />
+                                )}
+                                <img
+                                    src={product.images.edges[0]?.node.url}
+                                    alt={
+                                        product.images.edges[0]?.node.altText ||
+                                        product.title
+                                    }
+                                    class="relative w-full aspect-square h-full object-cover object-center group-hover:opacity-0 transition-opacity duration-500 ease-in-out"
+                                />
+                            </a>
+                        </div>
+                    ))
+                }
+            </div>
+        </div>
+
+        <div class="text-center z-10 px-8 md:px-16 lg:px-20">
+            <h3
+                id="active-title"
+                class="text-xl md-custom:text-2xl md:text-5xl lg:text-4xl text-darkRed tracking-wide transition-opacity duration-500"
+            >
+                {products[0]?.node.title}
+            </h3>
+
+            <p
+                id="active-price"
+                class="text-lg md-custom:text-2xl font-bold md:text-5xl lg:text-4xl text-darkRed/80 tracking-wide mt-2 md:mt-4 mb-4 md:mb-8 transition-opacity duration-500"
+            >
+                {
+                    products[0] &&
+                        new Intl.NumberFormat("en-US", {
+                            style: "currency",
+                            currency:
+                                products[0].node.priceRange.minVariantPrice
+                                    .currencyCode,
+                        }).format(
+                            parseFloat(
+                                products[0].node.priceRange.minVariantPrice
+                                    .amount,
+                            ),
+                        )
+                }
+            </p>
+            <div
+                class="swiper-pagination-popular mb-4 flex justify-center gap-2"
+            >
+            </div>
+            <CrystalButton
+                id="active-link"
+                text="See Details"
+                href={`/products/${products[0]?.node.handle}`}
+                className="text-darkRed! mt-8 bg-linear-to-br! from-darkRed/25! via-darkRed/12! to-darkRed/8! "
+            />
+        </div>
+    </div>
+</section>
+
+<style>
+    /* Contenedor de paginación */
+    .swiper-pagination-popular {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 8px;
+    }
+
+    /* Estilo base de los puntos (inactivos) */
+    :global(.swiper-pagination-popular .swiper-pagination-bullet) {
+        width: 0.4rem;
+        height: 0.4rem;
+        background-color: #d1d1d1; /* Gris claro de la foto */
+        opacity: 1;
+        border-radius: 50%;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        display: inline-block;
+    }
+
+    @media (min-width: 768px) and (max-width: 1024px) {
+        :global(.swiper-pagination-popular .swiper-pagination-bullet) {
+            width: 0.8rem;
+            height: 0.8rem;
+        }
+    }
+
+    @media (min-width: 1024px) {
+        :global(.swiper-pagination-popular .swiper-pagination-bullet) {
+            width: 1rem;
+            height: 1rem;
+        }
+    }
+
+    /* Estilo del punto Activo */
+    :global(.swiper-pagination-popular .swiper-pagination-bullet-active) {
+        background-color: #68150a; /* El color darkRed/café de tu diseño */
+        transform: scale(1.2);
+    }
+
+    /* Ocultar bullets por defecto de swiper si los hubiera */
+    .swiper-pagination-lock {
+        display: none !important;
+    }
+
+    .swiper-slide {
+        /* Forzamos renderizado por GPU en iOS */
+        backface-visibility: hidden;
+        -webkit-backface-visibility: hidden;
+        transform-style: preserve-3d;
+        -webkit-transform-style: preserve-3d;
+
+        /* Transición unificada */
+        transition: all 0.5s ease-in-out;
+        will-change: transform, opacity, filter;
+
+        filter: blur(10px);
+        opacity: 0.5;
+        /* Usamos transform para scale por mayor compatibilidad */
+        transform: scale(0.5) translateZ(0) !important;
+    }
+
+    .swiper-slide-active {
+        filter: blur(0px);
+        opacity: 1;
+        transform: scale(1) translateZ(0) !important;
+        z-index: 20;
+    }
+
+    .swiper-slide-next,
+    .swiper-slide-prev {
+        filter: blur(4px);
+        opacity: 0.7;
+        transform: scale(0.7) translateZ(0) !important;
+        z-index: 10;
+    }
+
+    @media (max-width: 768px) {
+        .swiper-slide {
+            transform: scale(0.5) translateZ(0) !important;
+        }
+        .swiper-slide-active {
+            transform: scale(1) translateZ(0) !important;
+        }
+        .swiper-slide-next,
+        .swiper-slide-prev {
+            transform: scale(0.5) translateZ(0) !important;
+        }
+    }
+</style>
+
+<script>
+    import Swiper from "swiper";
+    import { Autoplay, Pagination } from "swiper/modules";
+
+    // 2. Importar los estilos necesarios para el efecto
+    import "swiper/css";
+    import "swiper/css/effect-coverflow";
+
+    function initCarousel() {
+        const section = document.querySelector("#most-popular");
+        if (!section) return;
+
+        const edges = JSON.parse(section.getAttribute("data-products") || "[]");
+        const products = edges.map((e: any) => e.node);
+        const titleEl = document.getElementById("active-title");
+        const priceEl = document.getElementById("active-price");
+        const linkEl = document.getElementById(
+            "active-link",
+        ) as HTMLAnchorElement;
+
+        const swiper = new Swiper(".swiper-popular", {
+            // 3. Añadir el módulo a la lista
+            modules: [Autoplay, Pagination],
+            shortSwipes: true,
+            longSwipes: false,
+            grabCursor: true,
+            centeredSlides: true,
+            slidesPerView: 2, // 'auto' suele funcionar mejor con coverflow
+            loop: true,
+            spaceBetween: -120,
+            autoplay: {
+                delay: 3000,
+                disableOnInteraction: false,
+            },
+            pagination: {
+                el: ".swiper-pagination-popular",
+                clickable: true,
+                renderBullet: function (index, className) {
+                    // Creamos bullets limpios
+                    return `<span class="${className}"></span>`;
+                },
+            },
+            breakpoints: {
+                768: {
+                    slidesPerView: 4, // Ajustado para que el efecto se aprecie mejor
+                },
+            },
+
+            on: {
+                slideChange: function (s) {
+                    const activeIndex = s.realIndex;
+                    const product = products[activeIndex];
+
+                    if (product && titleEl && priceEl && linkEl) {
+                        [titleEl, priceEl].forEach((el) =>
+                            el.classList.add("opacity-0"),
+                        );
+
+                        setTimeout(() => {
+                            titleEl.textContent = product.title;
+                            priceEl.textContent = new Intl.NumberFormat(
+                                "en-US",
+                                {
+                                    style: "currency",
+                                    currency:
+                                        product.priceRange.minVariantPrice
+                                            .currencyCode,
+                                },
+                            ).format(
+                                parseFloat(
+                                    product.priceRange.minVariantPrice.amount,
+                                ),
+                            );
+                            linkEl.href = `/products/${product.handle}`;
+
+                            [titleEl, priceEl].forEach((el) =>
+                                el.classList.remove("opacity-0"),
+                            );
+                        }, 400);
+                    }
+                },
+            },
+        });
+    }
+
+    initCarousel();
+    document.addEventListener("astro:page-load", initCarousel);
+</script>

@@ -1,0 +1,79 @@
+@import "tailwindcss";
+
+@font-face {
+    font-family: "Montage Serif";
+    src: url("../assets/fonts/Montage-Serif-Font.woff2") format("woff2");
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Montage";
+    src: url("../assets/fonts/Montage-Font.woff2") format("woff2");
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+
+html {
+    @apply text-base md:text-[0.51rem] lg:text-[0.5rem] xl:text-[0.51rem] 2xl-prev:text-[0.5rem] 2xl:text-[0.5rem] 2xl-custom:text-[0.8rem] 3xl-custom:text-[1.4rem];
+}
+
+
+
+/* ─── Sonner Toast Custom Styles ─────────────────────────────────────────── */
+
+[data-sonner-toaster] [data-sonner-toast] {
+    font-family: "Montage Serif", serif !important;
+}
+
+[data-sonner-toaster] [data-sonner-toast] [data-title] {
+    font-family: "Montage Serif", serif !important;
+    @apply text-sm md:text-3xl lg:text-2xl font-serif uppercase !font-bold !text-darkRed;
+}
+
+[data-sonner-toaster] [data-sonner-toast] [data-description] {
+    font-family: "Montage Serif", serif !important;
+    @apply text-xs md:text-xl lg:text-lg text-darkRed/70;
+}
+
+/* Success: description con el mismo rojo ligeramente suavizado */
+[data-sonner-toaster] [data-sonner-toast][data-type="success"] [data-description] {
+    color: rgba(104, 21, 10, 0.72) !important;
+}
+
+/* Error: description también blanca, ligeramente translúcida */
+[data-sonner-toaster] [data-sonner-toast][data-type="error"] [data-description] {
+    @apply text-xs md:text-xl lg:text-lg text-darkRed/70;
+}
+
+@theme {
+    --font-display: "Montage Serif", serif;
+    --font-sans: "Montage Serif", sans-serif;
+
+    --color-darkRed: #68150A;
+    --color-bone: #ECECEC;
+    --color-black: #000000;
+    --color-white: #ffffff;
+    --color-light: #e8e3e1;
+
+    /* Corregido: Usamos --breakpoint-{nombre} */
+    --breakpoint-thin-screen: 380px;
+    --breakpoint-md-vertical: 770px;
+    --breakpoint-md-custom: 637px;
+    --breakpoint-md-custom-lg: 1023px;
+    --breakpoint-md-860px: 860px;
+    --breakpoint-md: 770px;
+    --breakpoint-lg: 1026px;
+    /* <--- Ahora Tailwind generará la variante 'lg' */
+    --breakpoint-xl: 1280px;
+    /* <--- Ahora Tailwind generará la variante 'xl' */
+    --breakpoint-2xl-prev: 1440px;
+    /* <--- Ahora Tailwind generará la variante '2xl-prev' */
+    --breakpoint-2xl: 1536px;
+    /* <--- Ahora Tailwind generará la variante '2xl' */
+    --breakpoint-2xl-custom: 2000px;
+    --breakpoint-3xl-custom: 3200px;
+}

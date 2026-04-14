@@ -1,0 +1,387 @@
+---
+import Logo from "../assets/logo.svg";
+import Logo_Large from "../assets/logo_large.svg";
+import Cart from "../assets/carrito.svg";
+---
+
+<nav
+  id="main-nav"
+  class="group text-darkRed w-full fixed top-0 z-400 transition-colors duration-500 backdrop-blur-xs mask-[linear-gradient(to_bottom,black_90%,transparent_100%)] lg:p-20 lg:pb-10 p-8 md:p-16 pb-8 flex justify-between items-center"
+>
+  <a href="/" class="h-12 md:h-8 hidden md:block">
+    <Logo_Large class="h-12 md:h-8 hidden md:block" />
+  </a>
+  <button
+    class="no-style menu-toggle cursor-pointer z-110 text-current md:hidden aspect-square"
+  >
+    <svg
+      viewBox="0 0 56 16"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      class="w-8 lg:w-16 h-auto overflow-visible"
+    >
+      <rect class="line-1" width="66" height="3" rx="1.5" fill="currentColor"
+      ></rect>
+      <rect
+        class="line-2"
+        y="13"
+        width="66"
+        height="3"
+        rx="1.5"
+        fill="currentColor"></rect>
+    </svg>
+  </button>
+  <a
+    href="/"
+    class="absolute left-1/2 w-20 md:w-40 -translate-x-1/2 cursor-pointer"
+  >
+    <Logo class="w-20 md:w-40" />
+  </a>
+  <div class="flex gap-12 items-center">
+    <!-- Cart button with item count badge -->
+    <button
+      id="cart-icon-btn"
+      aria-label="Open cart"
+      class="no-style relative cursor-pointer text-current"
+    >
+      <Cart class="w-12 md:w-16" />
+      <!-- Badge: siempre visible, muestra 0 cuando el carrito está vacío -->
+      <span
+        id="cart-count-badge"
+        class="absolute -bottom-2 md:-bottom-2 md:-right-3 right-0 min-w-[1.1rem] min-h-[1.1rem] aspect-square rounded-full bg-white text-darkRed transition-colors duration-300 text-sm md:text-2xl font-light tracking-wider flex items-center justify-center p-1 md:p-2 shadow-sm pointer-events-none"
+        >0</span
+      >
+    </button>
+    <button
+      class="no-style menu-toggle cursor-pointer z-110 text-current hidden md:block aspect-square"
+    >
+      <svg
+        width="56"
+        height="16"
+        viewBox="0 0 56 16"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        class="w-16 md:w-20 h-auto overflow-visible"
+      >
+        <rect class="line-1" width="66" height="3" rx="1.5" fill="currentColor"
+        ></rect>
+        <rect
+          class="line-2"
+          y="13"
+          width="66"
+          height="3"
+          rx="1.5"
+          fill="currentColor"></rect>
+      </svg>
+    </button>
+  </div>
+</nav>
+
+<!-- Modal Menu Container -->
+<div
+  id="modal-nav"
+  class="fixed inset-0 z-600 flex items-center justify-center pointer-events-none"
+>
+  <div
+    id="modal-overlay"
+    class="absolute inset-0 bg-[#D4CEC7] transition-all duration-700 ease-in-out opacity-0"
+  >
+  </div>
+
+  <!-- Modal box -->
+  <div
+    id="modal-box"
+    class="relative flex flex-col items-center justify-center py-10 px-8 md:p-12 w-[21rem] min-h-[21rem] md:w-[28rem] md:min-h-[28rem] lg:w-[34rem] lg:min-h-[34rem] h-fit rounded-[2rem] shadow-2xl transition-all duration-700 ease-in-out opacity-0 border border-white/20 bg-[#C1BBAB] text-darkRed"
+  >
+    <!-- Close icon -->
+    <button
+      id="close-modal"
+      class="absolute top-5 right-5 md:top-8 md:right-8 text-current opacity-70 hover:opacity-100 hover:scale-110 transition-all cursor-pointer"
+    >
+      <svg
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        class="w-6 h-6 md:w-8 md:h-8"
+      >
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg>
+    </button>
+
+    <!-- Links -->
+    <div
+      class="flex flex-col items-center gap-5 md:gap-8 tracking-widest uppercase font-serif text-lg md:text-3xl lg:text-3xl mt-4"
+    >
+      <a
+        href="/#home"
+        class="nav-link hover:scale-110 transition-transform duration-300"
+        >Home</a
+      >
+      <a
+        href="/#about"
+        class="nav-link hover:scale-110 transition-transform duration-300"
+        >About Us</a
+      >
+
+      <!-- Árbol Expansible de Categorías -->
+      <div class="flex flex-col items-center w-full">
+        <button
+          id="tree-toggle"
+          class="flex items-center justify-center gap-2 hover:scale-110 transition-transform duration-300 cursor-pointer uppercase font-serif outline-none"
+        >
+          Categories
+          <svg
+            id="tree-arrow"
+            class="w-4 h-4 md:w-6 md:h-6 transition-transform duration-300"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M19 9l-7 7-7-7"></path>
+          </svg>
+        </button>
+
+        <div
+          id="tree-children"
+          class="flex flex-col items-center w-full py-0 gap-4 md:gap-5 overflow-hidden max-h-0 opacity-0 transition-all duration-500 ease-in-out"
+        >
+          <a
+            href="/category/rings"
+            class="nav-link hover:scale-110 transition-transform duration-300 mt-4 md:mt-5 text-sm md:text-xl lg:text-xl opacity-80 hover:opacity-100"
+            >Rings</a
+          >
+          <a
+            href="/category/necklaces"
+            class="nav-link hover:scale-110 transition-transform duration-300 text-sm md:text-xl lg:text-xl opacity-80 hover:opacity-100"
+            >Necklaces</a
+          >
+          <a
+            href="/category/earrings"
+            class="nav-link hover:scale-110 transition-transform duration-300 mb-2 md:mb-2 text-sm md:text-xl lg:text-xl opacity-80 hover:opacity-100"
+            >Earrings</a
+          >
+        </div>
+      </div>
+
+      <a
+        href="/#most-popular"
+        class="nav-link hover:scale-110 transition-transform duration-300"
+        >Most Popular</a
+      >
+      <a
+        href="/#footer"
+        class="nav-link hover:scale-110 transition-transform duration-300"
+        >Contact</a
+      >
+    </div>
+  </div>
+</div>
+
+<script>
+  const nav = document.getElementById("main-nav");
+  // Observe the categories section for color changing
+  const categoriesSection = document.getElementById("categories");
+
+  if (nav && categoriesSection) {
+    const observerOptions = {
+      root: null,
+      // Creamos una línea de intersección justo debajo del navbar
+      rootMargin: "-80px 0px -80% 0px",
+      threshold: 0,
+    };
+
+    const colorObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          nav.classList.remove("text-darkRed");
+          nav.classList.add("text-white");
+        } else {
+          nav.classList.remove("text-white");
+          nav.classList.add("text-darkRed");
+        }
+      });
+    }, observerOptions);
+
+    colorObserver.observe(categoriesSection);
+  }
+
+  // Sync cart badge colors with navbar text color automatically
+  const cartBadgeElem = document.getElementById("cart-count-badge");
+  if (nav && cartBadgeElem) {
+    const syncBadgeColors = () => {
+      if (nav.classList.contains("text-white")) {
+        cartBadgeElem.classList.remove("bg-darkRed", "text-white");
+        cartBadgeElem.classList.add("bg-white", "text-darkRed");
+      } else {
+        cartBadgeElem.classList.remove("bg-white", "text-darkRed");
+        cartBadgeElem.classList.add("bg-darkRed", "text-white");
+      }
+    };
+
+    syncBadgeColors(); // Run on mount
+
+    const navObserver = new MutationObserver(syncBadgeColors);
+    navObserver.observe(nav, { attributes: true, attributeFilter: ["class"] });
+  }
+
+  // MODAL LOGIC
+  const modalNav = document.getElementById("modal-nav");
+  const modalBox = document.getElementById("modal-box");
+  const closeModalBtn = document.getElementById("close-modal");
+  const menuToggles = document.querySelectorAll(".menu-toggle");
+  const modalOverlay = document.getElementById("modal-overlay");
+  const navLinks = document.querySelectorAll(".nav-link");
+
+  const treeToggle = document.getElementById("tree-toggle");
+  const treeChildren = document.getElementById("tree-children");
+  const treeArrow = document.getElementById("tree-arrow");
+
+  let isModalOpen = false;
+
+  function toggleModal() {
+    if (!modalNav || !modalBox || !modalOverlay) return;
+    isModalOpen = !isModalOpen;
+
+    if (isModalOpen) {
+      modalNav.classList.remove("pointer-events-none");
+      modalOverlay.classList.remove("opacity-0");
+      modalBox.classList.remove("opacity-0");
+    } else {
+      modalNav.classList.add("pointer-events-none");
+      modalOverlay.classList.add("opacity-0");
+      modalBox.classList.add("opacity-0");
+
+      // Reseteamos el árbol de categorías al cerrar
+      if (treeChildren && treeArrow) {
+        treeChildren.classList.add("max-h-0", "opacity-0");
+        treeChildren.classList.remove("max-h-[500px]", "opacity-100");
+        treeArrow.classList.remove("rotate-180");
+      }
+    }
+  }
+
+  if (treeToggle && treeChildren && treeArrow) {
+    treeToggle.addEventListener("click", () => {
+      const isExpanded = !treeChildren.classList.contains("max-h-0");
+      if (!isExpanded) {
+        // Abrir
+        treeChildren.classList.remove("max-h-0", "opacity-0", "py-0");
+        treeChildren.classList.add("max-h-[500px]", "opacity-100", "py-2");
+        treeArrow.classList.add("rotate-180");
+      } else {
+        // Cerrar
+        treeChildren.classList.add("max-h-0", "opacity-0", "py-0");
+        treeChildren.classList.remove("max-h-[500px]", "opacity-100", "py-2");
+        treeArrow.classList.remove("rotate-180");
+      }
+    });
+  }
+
+  menuToggles.forEach((btn) => btn.addEventListener("click", toggleModal));
+  if (closeModalBtn) closeModalBtn.addEventListener("click", toggleModal);
+  if (modalOverlay) modalOverlay.addEventListener("click", toggleModal);
+
+  navLinks.forEach((link) => {
+    link.addEventListener("click", () => {
+      if (isModalOpen) toggleModal(); // close modal when navigating
+    });
+  });
+
+  // Track the center of the screen to stylize the Modal Box
+  const centerObserver = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting && modalBox && modalOverlay) {
+          // Limpiamos todas las clases de temas previos
+          modalBox.classList.remove(
+            "bg-[#C1BBAB]",
+            "text-darkRed",
+            "text-white",
+            "backdrop-blur-xl",
+            "bg-white/10",
+            "bg-stone-200/5",
+          );
+
+          if (entry.target.id === "home") {
+            // Home (Portada)
+            modalBox.classList.add(
+              "backdrop-blur-xl",
+              "bg-white/10",
+              "bg-stone-200/5",
+              "text-darkRed",
+            );
+            modalOverlay.classList.remove("bg-[#D4CEC7]");
+            modalOverlay.classList.add("bg-transparent");
+          } else if (entry.target.id === "categories") {
+            // Categories
+            modalBox.classList.add(
+              "backdrop-blur-xl",
+              "bg-white/10",
+              "bg-stone-200/5",
+              "text-white",
+            );
+            modalOverlay.classList.remove("bg-[#D4CEC7]");
+            modalOverlay.classList.add("bg-transparent");
+          } else {
+            // Solid Theme
+            modalBox.classList.add("bg-[#C1BBAB]", "text-darkRed");
+            modalOverlay.classList.remove("bg-transparent");
+            modalOverlay.classList.add("bg-[#D4CEC7]");
+          }
+        }
+      });
+    },
+    { rootMargin: "-40% 0px -40% 0px" },
+  );
+
+  ["home", "about", "categories", "most-popular"].forEach((id) => {
+    const section = document.getElementById(id);
+    if (section) centerObserver.observe(section);
+  });
+
+  // ── Cart icon ────────────────────────────────────────────────────────────
+
+  const cartBtn = document.getElementById("cart-icon-btn");
+  const cartBadge = document.getElementById("cart-count-badge");
+
+  function updateBadge(count: number) {
+    if (!cartBadge) return;
+    cartBadge.textContent = count > 99 ? "99+" : String(count);
+  }
+
+  // Open cart sidebar when icon is clicked
+  if (cartBtn) {
+    cartBtn.addEventListener("click", () => {
+      window.dispatchEvent(new CustomEvent("cartOpen"));
+    });
+  }
+
+  // Listen for cart updates from the sidebar / add-to-cart actions
+  window.addEventListener("cartUpdated", (e: Event) => {
+    const detail = (e as CustomEvent<{ count: number }>).detail;
+    updateBadge(detail?.count ?? 0);
+  });
+
+  // Restore count from localStorage on initial load (reads Shopify cart via sidebar)
+  // The sidebar dispatches cartUpdated on mount, so the badge syncs automatically.
+</script>
+<style>
+  /* Ocultar barra de scroll para estética limpia en el modal */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
+</style>
