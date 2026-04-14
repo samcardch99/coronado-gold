@@ -1,4 +1,16 @@
 import { useState, useEffect, useCallback, useRef } from "react";
+
+// Limita el ancho de la imagen en el CDN de Shopify (React no puede usar astro:assets)
+const shopifyImg = (url, maxWidth) => {
+  if (!url) return url;
+  try {
+    const u = new URL(url);
+    u.searchParams.set("width", String(maxWidth));
+    return u.toString();
+  } catch {
+    return url;
+  }
+};
 import { toast, Toaster } from "sonner";
 import {
   getCart,
@@ -50,7 +62,7 @@ function Spinner() {
 function Checkbox({ checked, onChange }) {
   return (
     <button
-      onClick={onChange}
+      onClick={(e) => { e.stopPropagation(); onChange(); }}
       aria-label={checked ? "Deselect item" : "Select item"}
       className="shrink-0 self-center cursor-pointer group"
     >
@@ -91,7 +103,8 @@ function CartItem({ line, onUpdate, onRemove, busy, quantityAvailable, selected,
 
   return (
     <div
-      className={`flex gap-3 p-6 border-b my-3 border-darkRed/10 last:border-0 rounded-xl transition-colors duration-300 -mx-3
+      onClick={() => onToggle(id)}
+      className={`flex gap-3 p-6 border-b my-3 border-darkRed/10 last:border-0 rounded-xl transition-colors duration-300 -mx-3 cursor-pointer select-none
         ${selected ? "bg-darkRed/6" : "bg-transparent"}`}
     >
       {/* Checkbox */}
@@ -101,7 +114,7 @@ function CartItem({ line, onUpdate, onRemove, busy, quantityAvailable, selected,
       <div className="w-20 aspect-square md:w-44 lg:w-40 shrink-0 bg-[#f5f3f0] border border-darkRed/20 rounded-md overflow-hidden flex items-center justify-center">
         {image?.url ? (
           <img
-            src={image.url}
+            src={shopifyImg(image.url, 320)}
             alt={image.altText || product.title}
             className="w-full h-full object-contain p-1"
           />
@@ -135,7 +148,10 @@ function CartItem({ line, onUpdate, onRemove, busy, quantityAvailable, selected,
 
         <div className="flex items-center justify-between mt-2 gap-4">
           {/* Quantity controls */}
-          <div className="flex items-center gap-2 md:gap-8 lg:gap-6 border border-darkRed/20 rounded-full px-3 md:px-4 lg:px-6 py-1 md:py-2 lg:py-3">
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="flex items-center gap-2 md:gap-8 lg:gap-6 border border-darkRed/20 rounded-full px-3 md:px-4 lg:px-6 py-1 md:py-2 lg:py-3 bg-darkRed/5"
+          >
             <button
               disabled={busy || quantity <= 1}
               onClick={() => onUpdate(id, quantity - 1)}
@@ -175,7 +191,7 @@ function CartItem({ line, onUpdate, onRemove, busy, quantityAvailable, selected,
       {/* Remove */}
       <button
         disabled={busy}
-        onClick={() => onRemove(id)}
+        onClick={(e) => { e.stopPropagation(); onRemove(id); }}
         className="shrink-0 self-start mt-0.5 text-darkRed/30 hover:text-darkRed/70 transition-colors disabled:opacity-20 cursor-pointer"
         aria-label="Remove item"
       >
@@ -184,7 +200,7 @@ function CartItem({ line, onUpdate, onRemove, busy, quantityAvailable, selected,
           fill="none"
           stroke="currentColor"
           strokeWidth="1.5"
-          className="w-4 h-4 md:w-6 md:h-6 lg:h-10 lg:w-10"
+          className="w-6 h-6 md:w-12 md:h-12 lg:h-10 lg:w-10"
         >
           <path
             strokeLinecap="round"
@@ -211,19 +227,31 @@ export default function CartSidebar() {
     cartRef.current = cart;
   }, [cart]);
 
+  // Ref para rastrear los IDs de línea ya conocidos (evita re-seleccionar ítems desmarcados al actualizar cantidades)
+  const knownLineIdsRef = useRef(new Set());
+
   // ── Sync selected lines cuando el carrito cambia ─────────────────────────
 
   useEffect(() => {
     const currentLines = cart?.lines?.edges?.map((e) => e.node) ?? [];
+    const currentIds = new Set(currentLines.map((l) => l.id));
+    // Capturar el snapshot ANTES de actualizar el ref, porque setSelectedLines
+    // difiere el updater y el ref ya estaría actualizado cuando React lo ejecute.
+    const prevKnownIds = knownLineIdsRef.current;
+
     setSelectedLines((prev) => {
-      const currentIds = new Set(currentLines.map((l) => l.id));
       const next = new Set(prev);
-      // Auto-seleccionar ítems nuevos
-      currentLines.forEach((l) => { if (!next.has(l.id)) next.add(l.id); });
-      // Limpiar IDs de ítems que ya no existen
+      // Auto-seleccionar solo ítems genuinamente nuevos (no vistos antes)
+      currentLines.forEach((l) => {
+        if (!prevKnownIds.has(l.id)) next.add(l.id);
+      });
+      // Limpiar IDs de ítems que ya no existen en el carrito
       next.forEach((id) => { if (!currentIds.has(id)) next.delete(id); });
       return next;
     });
+
+    // Actualizar el set de IDs conocidos para la próxima comparación
+    knownLineIdsRef.current = currentIds;
   }, [cart]);
 
   const handleToggleSelected = (lineId) => {
@@ -493,7 +521,7 @@ export default function CartSidebar() {
 
       {/* ── Sidebar panel ── */}
       <div
-        className={`fixed top-0 right-0 h-full w-full md:max-w-1/2 md:min-w-1/3 lg:w-180 lg:min-w-80 lg:max-w-1/4 z-800 flex flex-col bg-bone shadow-2xl transition-transform duration-500 ease-in-out ${isOpen ? "translate-x-0" : "translate-x-full"
+        className={`fixed top-0 right-0 h-full w-full md-custom:w-4/5 md:max-w-1/2 md:min-w-1/3 xl:min-w-1/4 lg:w-1/4 z-800 flex flex-col bg-bone shadow-2xl transition-transform duration-500 ease-in-out ${isOpen ? "translate-x-0" : "translate-x-full"
           }`}
       >
         {/* Header   */}
@@ -535,19 +563,19 @@ export default function CartSidebar() {
             // Loading skeleton
             <div className="flex flex-col items-center justify-center h-40 gap-3">
               <Spinner />
-              <p className="text-xs tracking-widest uppercase text-[#68150A]/40">
+              <p className="text-xs tracking-widest uppercase text-darkRed/40">
                 Updating…
               </p>
             </div>
           ) : isEmpty ? (
             // Empty state
-            <div className="flex flex-col items-center justify-center h-full py-20 gap-4">
+            <div className="flex flex-col items-center justify-center h-full py-20 gap-6">
               <svg
                 viewBox="0 0 48 48"
                 fill="none"
                 stroke="#68150A"
                 strokeWidth="1"
-                className="w-14 h-14 opacity-20"
+                className="w-14 h-14 md:w-28 md:h-28 lg:w-20 lg:h-20 opacity-20"
               >
                 <path
                   strokeLinecap="round"
@@ -557,12 +585,12 @@ export default function CartSidebar() {
                 <circle cx="19" cy="41" r="2" />
                 <circle cx="33" cy="41" r="2" />
               </svg>
-              <p className="text-sm tracking-[0.2em] uppercase text-[#68150A]/40 text-center">
+              <p className="text-sm md:text-2xl lg:text-3xl tracking-[0.2em] uppercase text-darkRed/40 text-center">
                 Your cart is empty
               </p>
               <button
                 onClick={() => setIsOpen(false)}
-                className="text-xs tracking-[0.2em] uppercase text-[#68150A] underline underline-offset-4 opacity-60 hover:opacity-100 transition-opacity cursor-pointer"
+                className="text-xs md:text-2xl lg:text-2xl tracking-wide  uppercase text-darkRed underline underline-offset-4 opacity-60 hover:opacity-100 transition-opacity cursor-pointer"
               >
                 Continue Shopping
               </button>
@@ -591,7 +619,7 @@ export default function CartSidebar() {
           <div className="px-6 py-6 border-t border-darkRed/10 flex flex-col gap-4">
             {/* Subtotal */}
             <div className="flex justify-between items-center">
-              <span className="text-base md:text-xl lg:text-2xl font-semibold font-serif uppercase tracking-widest text-darkRed/80">
+              <span className="text-base md:text-3xl lg:text-2xl font-semibold font-serif uppercase tracking-widest text-darkRed/80">
                 Subtotal
                 {selectedCount < lines.length && (
                   <span className="ml-1 text-darkRed/90">
@@ -599,11 +627,11 @@ export default function CartSidebar() {
                   </span>
                 )}
               </span>
-              <span className="text-lg md:text-2xl lg:text-3xl tracking-widest text-darkRed">
+              <span className="text-lg md:text-4xl lg:text-3xl tracking-widest text-darkRed">
                 {formatMoney(selectedSubtotal, subtotalCurrency)}
               </span>
             </div>
-            <p className="text-xs md:text-lg lg:text-xl font-light w-2/3 tracking-wider text-darkRed/80 -mt-2">
+            <p className="text-xs md:text-2xl lg:text-xl font-light w-2/3 tracking-wider text-darkRed/80 -mt-2">
               Shipping and taxes calculated at checkout
             </p>
 
@@ -614,7 +642,7 @@ export default function CartSidebar() {
               className={`relative w-full py-4 md:py-8 lg:py-6 inline-flex items-center justify-center rounded-full border border-white/30 bg-linear-to-br from-darkRed/30 via-darkRed/15 to-darkRed/8 shadow-lg backdrop-blur-sm text-darkRed text-xs lg:tracking-[0.3em] uppercase transition-transform duration-300 hover:scale-[1.02]
                 ${(!checkoutUrl || selectedCount === 0 || loading) ? "opacity-50 pointer-events-none" : "cursor-pointer"}`}
             >
-              <span className="relative z-10 font-light tracking-wider text-base md:text-3xl lg:text-3xl">
+              <span className="relative z-10 font-light tracking-wider text-base md:text-4xl lg:text-3xl">
                 {selectedCount === 0 ? "Select items to checkout" : (loading ? "Preparing items..." : "Proceed to Payment")}
               </span>
             </button>
@@ -622,7 +650,7 @@ export default function CartSidebar() {
             {/* Continue shopping */}
             <button
               onClick={() => setIsOpen(false)}
-              className="text-sm md:text-xl lg:text-xl tracking-wider py-1 md:py-10 lg:py-8 text-darkRed/80 md:text-darkRed/40 hover:text-darkRed/70 transition-colors text-center cursor-pointer"
+              className="text-sm md:text-3xl lg:text-xl tracking-wider py-1 md:py-10 lg:py-8 text-darkRed/80 md:text-darkRed/40 hover:text-darkRed/70 transition-colors text-center cursor-pointer"
             >
               Continue Shopping
             </button>

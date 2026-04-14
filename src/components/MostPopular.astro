@@ -1,5 +1,17 @@
 ---
 import CrystalButton from "./helpers/CrystalButton.astro";
+import { Image } from "astro:assets";
+
+const shopifyImg = (url: string, maxWidth: number) => {
+    if (!url) return url;
+    try {
+        const u = new URL(url);
+        u.searchParams.set("width", String(maxWidth));
+        return u.toString();
+    } catch {
+        return url;
+    }
+};
 
 const SHOPIFY_DOMAIN = import.meta.env.SHOPIFY_DOMAIN;
 const STOREFRONT_ACCESS_TOKEN = import.meta.env.STOREFRONT_ACCESS_TOKEN;
@@ -93,24 +105,19 @@ const products = json.data?.collection?.products?.edges || [];
                                 class="block w-full relative group h-full rounded-full flex items-center justify-center transition-all duration-700 image-container cursor-pointer"
                             >
                                 {product.hoverImage?.reference?.image?.url && (
-                                    <img
-                                        src={
-                                            product.hoverImage.reference.image
-                                                .url
-                                        }
-                                        alt={
-                                            product.hoverImage.reference.image
-                                                .altText || product.title
-                                        }
+                                    <Image
+                                        src={shopifyImg(product.hoverImage.reference.image.url, 800)}
+                                        alt={product.hoverImage.reference.image.altText || product.title}
+                                        width={800}
+                                        inferSize
                                         class="absolute inset-0 w-full aspect-square h-full object-cover object-center opacity-0 group-hover:opacity-100 transition-opacity duration-500 ease-in-out z-10"
                                     />
                                 )}
-                                <img
-                                    src={product.images.edges[0]?.node.url}
-                                    alt={
-                                        product.images.edges[0]?.node.altText ||
-                                        product.title
-                                    }
+                                <Image
+                                    src={shopifyImg(product.images.edges[0]?.node.url, 800)}
+                                    alt={product.images.edges[0]?.node.altText || product.title}
+                                    width={800}
+                                    inferSize
                                     class="relative w-full aspect-square h-full object-cover object-center group-hover:opacity-0 transition-opacity duration-500 ease-in-out"
                                 />
                             </a>

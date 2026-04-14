@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import emailjs from "@emailjs/browser";
-import { toast, Toaster } from "sonner";
+import { toast } from "sonner";
 
 export default function Footer({ className }) {
   const formRef = useRef(null);
@@ -85,8 +85,6 @@ export default function Footer({ className }) {
 
   return (
     <div className="w-full mt-7 mb-7 lg:mt-0 lg:mb-0 z-50 md-custom:w-4/5 md:w-4/5 lg:w-200">
-      <Toaster richColors position="bottom-right" />
-
       <h2 className={`text-2xl md:text-6xl lg:text-4xl ${className} w-4/5 md:w-3/5 mb-5 md:mb-14 lg:mb-10 whitespace-nowrap`}>
         Contact Us
       </h2>

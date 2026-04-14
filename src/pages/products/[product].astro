@@ -3,6 +3,19 @@ import Layout from "../../layouts/Layout.astro";
 import CrystalButton from "../../components/helpers/CrystalButton.astro";
 import CrystalButtonInterior from "../../components/helpers/CrystalButtonInterior.astro";
 import Plus from "../../assets/plus-sign.svg";
+import { Image } from "astro:assets";
+
+// Reduce el ancho de la imagen en el CDN de Shopify antes de que Astro la descargue.
+const shopifyImg = (url: string, maxWidth: number) => {
+    if (!url) return url;
+    try {
+        const u = new URL(url);
+        u.searchParams.set("width", String(maxWidth));
+        return u.toString();
+    } catch {
+        return url;
+    }
+};
 
 export async function getStaticPaths() {
     const response = await fetch(
@@ -111,15 +124,17 @@ const categoryQuote =
             <div class="w-full md:w-1/2 md:max-w-2xl lg:max-w-3xl flex flex-col items-center">
                 <!-- Image with corner decorations -->
                 <div class="relative aspect-square w-full h-full max-w-sm md:max-w-xl lg:max-w-max flex items-center justify-center p-8">
-                    <Plus class="absolute top-2 left-2 z-20 pointer-events-none" />
-                    <Plus class="absolute top-2 right-2 z-20 pointer-events-none" />
-                    <Plus class="absolute bottom-2 left-2 z-20 pointer-events-none" />
-                    <Plus class="absolute bottom-2 right-2 z-20 pointer-events-none" />
+                    <Plus class="md:h-8 lg:h-6 h-4 absolute top-2 left-2 z-20 pointer-events-none" />
+                    <Plus class="md:h-8 lg:h-6 h-4 absolute top-2 right-2 z-20 pointer-events-none" />
+                    <Plus class="md:h-8 lg:h-6 h-4 absolute bottom-2 left-2 z-20 pointer-events-none" />
+                    <Plus class="md:h-8 lg:h-6 h-4 absolute bottom-2 right-2 z-20 pointer-events-none" />
 
                     {mainImage?.url && (
-                        <img
-                            src={mainImage.url}
+                        <Image
+                            src={shopifyImg(mainImage.url, 1280)}
                             alt={mainImage.altText || product.title}
+                            width={1280}
+                            inferSize
                             class="w-full h-full object-contain drop-shadow-2xl"
                         />
                     )}
@@ -201,22 +216,24 @@ const categoryQuote =
 
         <!-- ── SECTION 2: Full-bleed hover image with quote ── -->
         {hoverImage?.url && (
-            <section class="relative w-full bg-[#D4CBC8] h-screen flex items-end justify-end overflow-hidden">
+            <section class="relative w-full bg-[#D4CBC8] h-screen flex items-end md:items-center justify-end overflow-hidden">
                 <!-- Background image -->
-                <img
-                    src={hoverImage.url}
+                <Image
+                    src={shopifyImg(hoverImage.url, 1920)}
                     alt={hoverImage.altText || product.title}
+                    width={1920}
+                    inferSize
                     class=" absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full aspect-square object-contain object-center"
                 />
 
                 <!-- Quote overlay -->
                 {categoryQuote && (
-                    <div class="relative z-10 w-full self-end flex justify-end items-end md:items-center px-8 pb-16 md:pb-28 lg:pb-32 md:px-20">
-                        <div class="text-right max-w-xs md-custom:max-w-sm md:max-w-4xl">
-                            <p class="font-serif text-sm md-custom:text-xl md:text-5xl lg:text-4xl leading-relaxed tracking-wide text-darkRed  italic">
+                    <div class="relative z-10 w-full flex justify-end items-end md:items-center px-8 pb-16 md:pb-28 lg:pb-32 md:px-20">
+                        <div class="text-right max-w-xs md-custom:max-w-sm md:max-w-110 lg:max-w-2xl xl:max-w-3xl">
+                            <p class="font-serif text-sm  md:text-3xl lg:text-4xl leading-relaxed tracking-wide text-darkRed  italic">
                                 "{categoryQuote.text}"
                             </p>
-                            <p class="font-serif text-xs md-custom:text-xl md:text-5xl lg:text-4xl tracking-widest text-darkRed/70 mt-3 ">
+                            <p class="font-serif text-xs  md:text-3xl lg:text-4xl tracking-widest text-darkRed/70 mt-3 ">
                                 — {categoryQuote.author}
                             </p>
                         </div>

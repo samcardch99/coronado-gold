@@ -5,7 +5,7 @@ import Footer from "../components/Footer.astro";
 import FloatingBar from "../components/helpers/FloatingBar.astro";
 import CartSidebar from "../components/CartSidebar.jsx";
 
-const { title = "Coronado Gold" } = Astro.props;
+const { title } = Astro.props;
 
 const shopifyDomain = import.meta.env.SHOPIFY_DOMAIN;
 const storefrontToken = import.meta.env.STOREFRONT_ACCESS_TOKEN;
@@ -19,7 +19,7 @@ const storefrontToken = import.meta.env.STOREFRONT_ACCESS_TOKEN;
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<link rel="icon" href="/favicon.ico" />
 		<meta name="generator" content={Astro.generator} />
-		<title>{title} — Coronado Gold</title>
+		<title>{title ? `${title} — Coronado Gold` : "Coronado Gold"}</title>
 
 		<!-- Inject Shopify config for client-side cart utility -->
 		<script define:vars={{ shopifyDomain, storefrontToken }}>

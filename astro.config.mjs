@@ -14,6 +14,9 @@ export default defineConfig({
   vite: {
     plugins: [tailwindcss()]
   },
-
+  image: {
+    // Permite que el componente <Image> de Astro optimice imágenes remotas del CDN de Shopify
+    domains: ['cdn.shopify.com'],
+  },
   integrations: [react()]
 });
