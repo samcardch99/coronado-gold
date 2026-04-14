@@ -496,7 +496,7 @@ export default function CartSidebar() {
         className={`fixed top-0 right-0 h-full w-full md:max-w-1/2 md:min-w-1/3 lg:w-180 lg:min-w-80 lg:max-w-1/4 z-800 flex flex-col bg-bone shadow-2xl transition-transform duration-500 ease-in-out ${isOpen ? "translate-x-0" : "translate-x-full"
           }`}
       >
-        {/* Header */}
+        {/* Header   */}
         <div className="flex items-center justify-between px-6 py-5 border-b border-darkRed/10">
           <div className="flex items-center gap-3">
             <h2 className="font-serif text-xl md:text-5xl lg:text-3xl tracking-[0.2em] uppercase text-darkRed">
