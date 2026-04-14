@@ -9,6 +9,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     name: Build and Push
+    environment: deploy
     steps:
       - name: git-checkout
         uses: actions/checkout@v3
