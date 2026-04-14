@@ -14,3 +14,217 @@ import MostPopular from "../components/MostPopular.astro";
     <MostPopular />
   </main>
 </Layout>
+
+<script>
+  // ─── Scroll Snap para la página principal ────────────────────────────────────
+  // Funciona junto a Lenis: interceptamos los eventos de rueda/touch/teclado,
+  // evitamos el scroll nativo y usamos lenis.scrollTo() para el snap suavizado.
+
+  const SECTION_IDS = ["#home", "#about", "#categories", "#most-popular"];
+  const SNAP_DURATION = 1.0;     // segundos (para Lenis)
+  const WHEEL_THRESHOLD = 30;    // px de delta para disparar el snap
+  const WHEEL_RESET_MS = 200;    // ms sin rueda para resetear el acumulador
+  const SNAP_SAFETY_MS = 1300;   // timeout máximo para desbloquear isSnapping
+
+  function initScrollSnap() {
+    const sections = SECTION_IDS
+      .map((id) => document.querySelector<HTMLElement>(id))
+      .filter((el): el is HTMLElement => el !== null);
+
+    if (sections.length === 0) return;
+
+    let isSnapping = false;
+    let safetyTimer: ReturnType<typeof setTimeout> | null = null;
+    let wheelDelta = 0;
+    let wheelTimer: ReturnType<typeof setTimeout> | null = null;
+    let touchStartY = 0;
+    let touchStartX = 0;
+
+    // ─── Helpers ──────────────────────────────────────────────────────────────
+
+    function getCurrentIndex(): number {
+      const mid = window.scrollY + window.innerHeight * 0.4;
+      let idx = 0;
+      sections.forEach((s, i) => {
+        if (s.offsetTop <= mid) idx = i;
+      });
+      return idx;
+    }
+
+    function isSideMenuOpen(): boolean {
+      const menu = document.querySelector("#categories-side-menu");
+      return menu !== null && !menu.classList.contains("-translate-x-full");
+    }
+
+    function releaseSnap() {
+      isSnapping = false;
+      if (safetyTimer) { clearTimeout(safetyTimer); safetyTimer = null; }
+      wheelDelta = 0; // descarta cualquier delta acumulado durante el snap
+    }
+
+    function snapTo(index: number) {
+      if (isSnapping) return;
+      if (index < 0 || index >= sections.length) return;
+
+      isSnapping = true;
+      wheelDelta = 0;
+
+      // Timeout de seguridad: si onComplete nunca llega (Lenis interrumpido),
+      // liberamos el bloqueo igualmente para evitar quedar atascados.
+      safetyTimer = setTimeout(releaseSnap, SNAP_SAFETY_MS);
+
+      const target = sections[index];
+      const lenis = (window as any).__lenis;
+
+      if (lenis) {
+        lenis.scrollTo(target.offsetTop, {
+          duration: SNAP_DURATION,
+          easing: (t: number) => 1 - Math.pow(1 - t, 3),
+          onComplete: releaseSnap,
+        });
+      } else {
+        window.scrollTo({ top: target.offsetTop, behavior: "smooth" });
+        setTimeout(releaseSnap, SNAP_DURATION * 1000 + 200);
+      }
+    }
+
+    // ─── Wheel ────────────────────────────────────────────────────────────────
+    // Usamos fase de CAPTURA (capture: true) para interceptar el evento ANTES
+    // de que el listener de Lenis (registrado en fase de burbuja) lo reciba.
+    // Solo bloqueamos cuando el destino es otra sección dentro del rango.
+    // Si el nextIndex cae fuera del rango (ej. ir al footer), soltamos el
+    // evento para que Lenis lo maneje con su scroll suavizado normal.
+
+    function onWheel(e: WheelEvent) {
+      if (isSideMenuOpen()) return;
+
+      // Durante un snap en curso: bloquear siempre
+      if (isSnapping) {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        return;
+      }
+
+      const dir = e.deltaY > 0 ? 1 : -1;
+      const nextIdx = getCurrentIndex() + dir;
+
+      // Fuera del rango de secciones → liberar a Lenis (footer, o inicio)
+      if (nextIdx < 0 || nextIdx >= sections.length) {
+        wheelDelta = 0;
+        return; // no llamamos preventDefault: Lenis recibe el evento
+      }
+
+      // Dentro del rango → interceptar y snap
+      e.preventDefault();
+      e.stopImmediatePropagation();
+
+      wheelDelta += e.deltaY;
+      if (wheelTimer) clearTimeout(wheelTimer);
+      wheelTimer = setTimeout(() => { wheelDelta = 0; }, WHEEL_RESET_MS);
+
+      if (Math.abs(wheelDelta) >= WHEEL_THRESHOLD) {
+        snapTo(nextIdx);
+      }
+    }
+
+    // ─── Touch ────────────────────────────────────────────────────────────────
+
+    function onTouchStart(e: TouchEvent) {
+      touchStartY = e.touches[0].clientY;
+      touchStartX = e.touches[0].clientX;
+    }
+
+    function onTouchEnd(e: TouchEvent) {
+      if (isSideMenuOpen() || isSnapping) return;
+      const diffY = touchStartY - e.changedTouches[0].clientY;
+      const diffX = touchStartX - e.changedTouches[0].clientX;
+      if (Math.abs(diffY) < 50) return;
+      if (Math.abs(diffX) > Math.abs(diffY)) return; // swipe horizontal → ignorar
+      const dir = diffY > 0 ? 1 : -1;
+      const nextIdx = getCurrentIndex() + dir;
+      if (nextIdx < 0 || nextIdx >= sections.length) return; // fuera de rango → libre
+      snapTo(nextIdx);
+    }
+
+    // ─── Teclado ──────────────────────────────────────────────────────────────
+
+    function onKeyDown(e: KeyboardEvent) {
+      if (isSideMenuOpen() || isSnapping) return;
+      if (["ArrowDown", "PageDown", " "].includes(e.key)) {
+        e.preventDefault();
+        snapTo(getCurrentIndex() + 1);
+      } else if (["ArrowUp", "PageUp"].includes(e.key)) {
+        e.preventDefault();
+        snapTo(getCurrentIndex() - 1);
+      }
+    }
+
+    // ─── Registro ─────────────────────────────────────────────────────────────
+
+    // capture: true → nuestro handler corre ANTES que el listener de Lenis
+    window.addEventListener("wheel", onWheel, { passive: false, capture: true });
+    window.addEventListener("touchstart", onTouchStart, { passive: true });
+    window.addEventListener("touchend", onTouchEnd, { passive: true });
+    window.addEventListener("keydown", onKeyDown);
+
+    // Limpieza al salir de la página (Astro view transitions)
+    document.addEventListener(
+      "astro:before-preparation",
+      () => {
+        window.removeEventListener("wheel", onWheel, { capture: true } as any);
+        window.removeEventListener("touchstart", onTouchStart);
+        window.removeEventListener("touchend", onTouchEnd);
+        window.removeEventListener("keydown", onKeyDown);
+        if (safetyTimer) clearTimeout(safetyTimer);
+      },
+      { once: true }
+    );
+  }
+
+  // Inicializar en carga inicial y en cada navegación de Astro
+  initScrollSnap();
+  document.addEventListener("astro:page-load", initScrollSnap);
+
+  // ─── Navegación desde la home: siempre recarga completa ──────────────────
+  // Evita que el ClientRouter de Astro cachee el DOM de la home (con los
+  // Swipers ya modificados), lo que rompería Categories y MostPopular al volver.
+
+  function setupHomeLinks() {
+    const isHome =
+      window.location.pathname === "/" ||
+      window.location.pathname === "/index.html";
+    if (!isHome) return;
+
+    function handleLinkClick(e: MouseEvent) {
+      const link = (e.target as Element).closest<HTMLAnchorElement>("a[href]");
+      if (!link) return;
+
+      const href = link.getAttribute("href") ?? "";
+
+      // Ignorar: anclas internas, javascript:, links externos
+      if (
+        href.startsWith("#") ||
+        href.startsWith("javascript:") ||
+        (href.startsWith("http") && !href.includes(window.location.hostname))
+      )
+        return;
+
+      // Forzar recarga completa en lugar de View Transition
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      window.location.href = link.href;
+    }
+
+    document.addEventListener("click", handleLinkClick, { capture: true });
+
+    // Limpiar al salir de la home
+    document.addEventListener(
+      "astro:before-preparation",
+      () => document.removeEventListener("click", handleLinkClick, { capture: true }),
+      { once: true }
+    );
+  }
+
+  setupHomeLinks();
+  document.addEventListener("astro:page-load", setupHomeLinks);
+</script>

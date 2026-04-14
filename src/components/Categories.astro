@@ -159,7 +159,7 @@ const categoryData = images.map((img) => ({
 <!-- Side Menu Panel -->
 <aside
     id="categories-side-menu"
-    class="fixed top-0 bottom-0 left-0 w-full md:w-fit z-50 bg-[#8c827a]/20 backdrop-blur-3xl border-r border-[#ece5e0]/20 transform -translate-x-full transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] flex flex-col justify-between py-36 md:py-52 lg:py-52 p-8 md:p-12 lg:p-16"
+    class="fixed top-0 bottom-0 left-0 w-full md:w-142 lg:w-150 z-50 bg-[#2D1B15]/60 backdrop-blur-3xl border-r border-[#ece5e0]/20 transform -translate-x-full transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] flex flex-col justify-between py-36 md:py-52 lg:py-52 p-8 md:p-12 lg:p-16"
 >
     <button
         id="close-side-menu"
@@ -202,13 +202,30 @@ const categoryData = images.map((img) => ({
     import "swiper/css";
     import "swiper/css/effect-fade";
 
+    let categoriesSwiper: any = null;
+    let originalCategoriesHTML: string | null = null;
+
     const initSwiper = () => {
         const section = document.querySelector("#categories");
-        const swiperEl = document.querySelector(".swiper-categories");
+        const swiperEl = document.querySelector<HTMLElement>(".swiper-categories");
         const titleEl = document.querySelector("#dynamic-title");
         const linkEl = document.querySelector(
             "#dynamic-link",
         ) as HTMLAnchorElement;
+
+        if (!swiperEl || !section || !titleEl) return;
+
+        // Primera vez: guardar HTML limpio del servidor
+        if (originalCategoriesHTML === null) {
+            originalCategoriesHTML = swiperEl.innerHTML;
+        } else {
+            // Reinit: destruir y restaurar HTML limpio
+            if (categoriesSwiper) {
+                try { categoriesSwiper.destroy(true, false); } catch (_) {}
+                categoriesSwiper = null;
+            }
+            swiperEl.innerHTML = originalCategoriesHTML;
+        }
 
         // Side Menu Logic
         const openBtn = document.querySelector("#open-side-menu");
@@ -221,55 +238,51 @@ const categoryData = images.map((img) => ({
                 e.preventDefault();
                 sideMenu.classList.remove("-translate-x-full");
                 backdrop.classList.remove("opacity-0", "pointer-events-none");
+                document.dispatchEvent(new CustomEvent("sideMenuOpen"));
             });
 
             const closeMenu = () => {
                 sideMenu.classList.add("-translate-x-full");
                 backdrop.classList.add("opacity-0", "pointer-events-none");
+                document.dispatchEvent(new CustomEvent("sideMenuClose"));
             };
 
             closeBtn.addEventListener("click", closeMenu);
             backdrop.addEventListener("click", closeMenu);
         }
 
-        if (swiperEl && section && titleEl) {
-            // Obtenemos los nombres desde el atributo data
-            const categories = JSON.parse(
-                section.getAttribute("data-categories") ?? "[]",
-            );
+        // Obtenemos los nombres desde el atributo data
+        const categories = JSON.parse(
+            section.getAttribute("data-categories") ?? "[]",
+        );
 
-            const swiper = new Swiper(".swiper-categories", {
-                modules: [Autoplay, EffectFade],
-                loop: true,
-                effect: "fade",
-                speed: 2000,
-                autoplay: {
-                    delay: 4000,
-                    disableOnInteraction: false,
+        categoriesSwiper = new Swiper(".swiper-categories", {
+            modules: [Autoplay, EffectFade],
+            loop: true,
+            effect: "fade",
+            speed: 2000,
+            autoplay: {
+                delay: 4000,
+                disableOnInteraction: false,
+            },
+            allowTouchMove: false,
+            fadeEffect: {
+                crossFade: true,
+            },
+            on: {
+                slideChange: function () {
+                    titleEl.classList.add("!opacity-0");
+                    setTimeout(() => {
+                        const currentCat = categories[categoriesSwiper.realIndex];
+                        titleEl.textContent = currentCat.alt;
+                        if (linkEl) {
+                            linkEl.href = `/category/${currentCat.handle}`;
+                        }
+                        titleEl.classList.remove("!opacity-0");
+                    }, 500);
                 },
-                allowTouchMove: false,
-                fadeEffect: {
-                    crossFade: true,
-                },
-                on: {
-                    slideChange: function () {
-                        // 1. Inmediatamente empezamos el fade-out del texto actual
-                        titleEl.classList.add("!opacity-0");
-
-                        // 2. A la mitad de la transición de la imagen (1000ms),
-                        // cambiamos el texto e iniciamos el fade-in.
-                        setTimeout(() => {
-                            const currentCat = categories[swiper.realIndex];
-                            titleEl.textContent = currentCat.alt;
-                            if (linkEl) {
-                                linkEl.href = `/category/${currentCat.handle}`;
-                            }
-                            titleEl.classList.remove("!opacity-0");
-                        }, 500);
-                    },
-                },
-            });
-        }
+            },
+        });
     };
 
     initSwiper();

@@ -17,6 +17,9 @@ pnpm-debug.log*
 .env
 .env.production
 
+# webhook credentials (nunca subir a GitHub)
+webhook-config.php
+
 # macOS-specific files
 .DS_Store
 

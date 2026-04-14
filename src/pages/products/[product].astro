@@ -123,20 +123,29 @@ const categoryQuote =
             <!-- IMAGE COLUMN -->
             <div class="w-full md:w-1/2 md:max-w-2xl lg:max-w-3xl flex flex-col items-center">
                 <!-- Image with corner decorations -->
-                <div class="relative aspect-square w-full h-full max-w-sm md:max-w-xl lg:max-w-max flex items-center justify-center p-8">
+                <div class="relative aspect-square w-full max-w-sm md:max-w-xl lg:max-w-2xl flex items-center justify-center p-8">
                     <Plus class="md:h-8 lg:h-6 h-4 absolute top-2 left-2 z-20 pointer-events-none" />
                     <Plus class="md:h-8 lg:h-6 h-4 absolute top-2 right-2 z-20 pointer-events-none" />
                     <Plus class="md:h-8 lg:h-6 h-4 absolute bottom-2 left-2 z-20 pointer-events-none" />
                     <Plus class="md:h-8 lg:h-6 h-4 absolute bottom-2 right-2 z-20 pointer-events-none" />
 
                     {mainImage?.url && (
-                        <Image
-                            src={shopifyImg(mainImage.url, 1280)}
-                            alt={mainImage.altText || product.title}
-                            width={1280}
-                            inferSize
-                            class="w-full h-full object-contain drop-shadow-2xl"
-                        />
+                        <div class="relative w-full aspect-square">
+                            <!-- Skeleton: ocupa el espacio antes de que la imagen cargue -->
+                            <div
+                                id="product-img-skeleton"
+                                class="skeleton absolute inset-0 rounded-2xl transition-opacity duration-500"
+                            />
+                            <!-- Imagen: arranca invisible, aparece al cargar -->
+                            <Image
+                                id="product-main-img"
+                                src={shopifyImg(mainImage.url, 1280)}
+                                alt={mainImage.altText || product.title}
+                                width={1280}
+                                inferSize
+                                class="absolute inset-0 w-full h-full object-contain drop-shadow-2xl opacity-0 transition-opacity duration-500"
+                            />
+                        </div>
                     )}
                 </div>
 
@@ -207,9 +216,9 @@ const categoryQuote =
         </section>
 
         <div class="fixed top-28 left-6 md:top-52 md:left-20 z-30">
-            <CrystalButtonInterior  
+            <CrystalButtonInterior
                 text="Back"
-                onClick="history.back()"
+                onClick="__cgBack()"
                 className="px-6 py-2.5 rounded-full bg-gray-400/15 border border-darkRed/20 text-darkRed tracking-widest text-sm "
             />
         </div>
@@ -348,4 +357,27 @@ const categoryQuote =
 
     initAddToCart();
     document.addEventListener("astro:page-load", initAddToCart);
+
+    // ─── Skeleton de imagen principal ────────────────────────────────────────
+    function initImageSkeleton() {
+        const img = document.getElementById("product-main-img") as HTMLImageElement | null;
+        const skeleton = document.getElementById("product-img-skeleton");
+        if (!img || !skeleton) return;
+
+        function reveal() {
+            img!.classList.remove("opacity-0");
+            img!.classList.add("opacity-100");
+            skeleton!.classList.add("opacity-0", "pointer-events-none");
+        }
+
+        if (img.complete && img.naturalWidth > 0) {
+            // La imagen ya estaba en caché
+            reveal();
+        } else {
+            img.addEventListener("load", reveal, { once: true });
+        }
+    }
+
+    initImageSkeleton();
+    document.addEventListener("astro:page-load", initImageSkeleton);
 </script>

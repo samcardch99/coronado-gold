@@ -228,4 +228,23 @@ const isHome = pathname === "/" || pathname === "/index.html";
 
         footerObserver.observe(footerElement);
     }
+
+    // 4. Ocultar/mostrar cuando se abre/cierra el sidebar de categorías
+    document.addEventListener("sideMenuOpen", () => {
+        navContainer?.classList.add(
+            "opacity-0",
+            "translate-y-10",
+            "pointer-events-none",
+            "scale-95",
+        );
+    });
+
+    document.addEventListener("sideMenuClose", () => {
+        navContainer?.classList.remove(
+            "opacity-0",
+            "translate-y-10",
+            "pointer-events-none",
+            "scale-95",
+        );
+    });
 </script>

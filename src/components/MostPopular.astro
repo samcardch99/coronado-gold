@@ -102,20 +102,33 @@ const products = json.data?.collection?.products?.edges || [];
                         <div class="swiper-slide flex items-center justify-center aspect-square ">
                             <a
                                 href={`/products/${product.handle}`}
-                                class="block w-full relative group h-full rounded-full flex items-center justify-center transition-all duration-700 image-container cursor-pointer"
+                                class="lg:scale-50 w-full relative group h-full rounded-full flex items-center justify-center transition-all duration-700 image-container cursor-pointer"
                             >
                                 {product.hoverImage?.reference?.image?.url && (
                                     <Image
-                                        src={shopifyImg(product.hoverImage.reference.image.url, 800)}
-                                        alt={product.hoverImage.reference.image.altText || product.title}
+                                        src={shopifyImg(
+                                            product.hoverImage.reference.image
+                                                .url,
+                                            800,
+                                        )}
+                                        alt={
+                                            product.hoverImage.reference.image
+                                                .altText || product.title
+                                        }
                                         width={800}
                                         inferSize
                                         class="absolute inset-0 w-full aspect-square h-full object-cover object-center opacity-0 group-hover:opacity-100 transition-opacity duration-500 ease-in-out z-10"
                                     />
                                 )}
                                 <Image
-                                    src={shopifyImg(product.images.edges[0]?.node.url, 800)}
-                                    alt={product.images.edges[0]?.node.altText || product.title}
+                                    src={shopifyImg(
+                                        product.images.edges[0]?.node.url,
+                                        800,
+                                    )}
+                                    alt={
+                                        product.images.edges[0]?.node.altText ||
+                                        product.title
+                                    }
                                     width={800}
                                     inferSize
                                     class="relative w-full aspect-square h-full object-cover object-center group-hover:opacity-0 transition-opacity duration-500 ease-in-out"
@@ -268,9 +281,29 @@ const products = json.data?.collection?.products?.edges || [];
     import "swiper/css";
     import "swiper/css/effect-coverflow";
 
+    let popularSwiper: any = null;
+    let originalPopularHTML: string | null = null;
+
     function initCarousel() {
         const section = document.querySelector("#most-popular");
         if (!section) return;
+
+        const swiperEl = document.querySelector<HTMLElement>(".swiper-popular");
+        if (!swiperEl) return;
+
+        // Primera vez: guardar el HTML original limpio del servidor
+        if (originalPopularHTML === null) {
+            originalPopularHTML = swiperEl.innerHTML;
+        } else {
+            // Reinit: destruir instancia vieja y restaurar el HTML limpio
+            // garantiza que Swiper arranca desde DOM virgen sin importar
+            // qué haya cacheado Astro
+            if (popularSwiper) {
+                try { popularSwiper.destroy(true, false); } catch (_) {}
+                popularSwiper = null;
+            }
+            swiperEl.innerHTML = originalPopularHTML;
+        }
 
         const edges = JSON.parse(section.getAttribute("data-products") || "[]");
         const products = edges.map((e: any) => e.node);
@@ -280,7 +313,7 @@ const products = json.data?.collection?.products?.edges || [];
             "active-link",
         ) as HTMLAnchorElement;
 
-        const swiper = new Swiper(".swiper-popular", {
+        popularSwiper = new Swiper(".swiper-popular", {
             // 3. Añadir el módulo a la lista
             modules: [Autoplay, Pagination],
             shortSwipes: true,

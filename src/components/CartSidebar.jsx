@@ -101,6 +101,8 @@ function CartItem({ line, onUpdate, onRemove, busy, quantityAvailable, selected,
 
   const atMaxStock = quantityAvailable != null && quantity >= quantityAvailable;
 
+  const [imgLoaded, setImgLoaded] = useState(false);
+
   return (
     <div
       onClick={() => onToggle(id)}
@@ -111,13 +113,20 @@ function CartItem({ line, onUpdate, onRemove, busy, quantityAvailable, selected,
       <Checkbox checked={selected} onChange={() => onToggle(id)} />
 
       {/* Thumbnail */}
-      <div className="w-20 aspect-square md:w-44 lg:w-40 shrink-0 bg-[#f5f3f0] border border-darkRed/20 rounded-md overflow-hidden flex items-center justify-center">
+      <div className="w-20 aspect-square md:w-44 lg:w-40 shrink-0 border border-darkRed/20 rounded-md overflow-hidden relative">
         {image?.url ? (
-          <img
-            src={shopifyImg(image.url, 320)}
-            alt={image.altText || product.title}
-            className="w-full h-full object-contain p-1"
-          />
+          <>
+            {/* Skeleton: visible hasta que la imagen carga */}
+            <div
+              className={`skeleton absolute inset-0 transition-opacity duration-500 ${imgLoaded ? "opacity-0 pointer-events-none" : "opacity-100"}`}
+            />
+            <img
+              src={shopifyImg(image.url, 320)}
+              alt={image.altText || product.title}
+              onLoad={() => setImgLoaded(true)}
+              className="w-full h-full object-contain p-1"
+            />
+          </>
         ) : (
           <div className="w-full h-full bg-light" />
         )}
