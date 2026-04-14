@@ -167,64 +167,16 @@ import MostPopular from "../components/MostPopular.astro";
     window.addEventListener("touchend", onTouchEnd, { passive: true });
     window.addEventListener("keydown", onKeyDown);
 
-    // Limpieza al salir de la página (Astro view transitions)
-    document.addEventListener(
-      "astro:before-preparation",
-      () => {
-        window.removeEventListener("wheel", onWheel, { capture: true } as any);
-        window.removeEventListener("touchstart", onTouchStart);
-        window.removeEventListener("touchend", onTouchEnd);
-        window.removeEventListener("keydown", onKeyDown);
-        if (safetyTimer) clearTimeout(safetyTimer);
-      },
-      { once: true }
-    );
+    // Limpieza al salir de la página
+    window.addEventListener("beforeunload", () => {
+      window.removeEventListener("wheel", onWheel, { capture: true } as any);
+      window.removeEventListener("touchstart", onTouchStart);
+      window.removeEventListener("touchend", onTouchEnd);
+      window.removeEventListener("keydown", onKeyDown);
+      if (safetyTimer) clearTimeout(safetyTimer);
+    });
   }
 
-  // Inicializar en carga inicial y en cada navegación de Astro
+  // Inicializar en carga inicial
   initScrollSnap();
-  document.addEventListener("astro:page-load", initScrollSnap);
-
-  // ─── Navegación desde la home: siempre recarga completa ──────────────────
-  // Evita que el ClientRouter de Astro cachee el DOM de la home (con los
-  // Swipers ya modificados), lo que rompería Categories y MostPopular al volver.
-
-  function setupHomeLinks() {
-    const isHome =
-      window.location.pathname === "/" ||
-      window.location.pathname === "/index.html";
-    if (!isHome) return;
-
-    function handleLinkClick(e: MouseEvent) {
-      const link = (e.target as Element).closest<HTMLAnchorElement>("a[href]");
-      if (!link) return;
-
-      const href = link.getAttribute("href") ?? "";
-
-      // Ignorar: anclas internas, javascript:, links externos
-      if (
-        href.startsWith("#") ||
-        href.startsWith("javascript:") ||
-        (href.startsWith("http") && !href.includes(window.location.hostname))
-      )
-        return;
-
-      // Forzar recarga completa en lugar de View Transition
-      e.preventDefault();
-      e.stopImmediatePropagation();
-      window.location.href = link.href;
-    }
-
-    document.addEventListener("click", handleLinkClick, { capture: true });
-
-    // Limpiar al salir de la home
-    document.addEventListener(
-      "astro:before-preparation",
-      () => document.removeEventListener("click", handleLinkClick, { capture: true }),
-      { once: true }
-    );
-  }
-
-  setupHomeLinks();
-  document.addEventListener("astro:page-load", setupHomeLinks);
 </script>

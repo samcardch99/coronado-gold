@@ -4,7 +4,6 @@ import Navbar from "../components/Navbar.astro";
 import Footer from "../components/Footer.astro";
 import FloatingBar from "../components/helpers/FloatingBar.astro";
 import CartSidebar from "../components/CartSidebar.jsx";
-import ClientRouter from "astro/components/ClientRouter.astro";
 
 const { title } = Astro.props;
 
@@ -21,7 +20,6 @@ const storefrontToken = import.meta.env.STOREFRONT_ACCESS_TOKEN;
 		<link rel="icon" href="/favicon.ico" />
 		<meta name="generator" content={Astro.generator} />
 		<title>{title ? `${title} — Coronado Gold` : "Coronado Gold"}</title>
-		<ClientRouter />
 
 		<!-- Inject Shopify config for client-side cart utility -->
 		<script define:vars={{ shopifyDomain, storefrontToken }}>
@@ -59,27 +57,9 @@ const storefrontToken = import.meta.env.STOREFRONT_ACCESS_TOKEN;
 			// Inicialización en primera carga
 			createLenis();
 
-			// Recrear después de cada View Transition
-			document.addEventListener("astro:after-swap", createLenis);
-
-			// Guardar la URL actual antes de cada navegación
-			// para que las páginas de detalle puedan volver aquí con recarga completa
-			document.addEventListener("astro:before-preparation", () => {
-				sessionStorage.setItem("cg_prev_page", window.location.href);
-			});
-
-			// Back navigation: recarga completa solo si se vuelve a la home,
-			// para evitar el cache de Astro que rompe los Swipers.
-			// Para cualquier otro interior se usa history.back() normal.
+			// Back navigation: navegación estándar del navegador
 			(window as any).__cgBack = () => {
-				const prev = sessionStorage.getItem("cg_prev_page") || "/";
-				const prevPath = new URL(prev, window.location.origin).pathname;
-				const isHome = prevPath === "/" || prevPath === "/index.html";
-				if (isHome) {
-					window.location.href = prev;
-				} else {
-					history.back();
-				}
+				history.back();
 			};
 		</script>
 	</body>
