@@ -44,7 +44,7 @@ html {
     color: rgba(104, 21, 10, 0.72) !important;
 }
 
-/* Error: description también blanca, ligeramente translúcida */
+/* Error: description  también blanca,  ligeramente translúcida */
 [data-sonner-toaster] [data-sonner-toast][data-type="error"] [data-description] {
     @apply text-xs md:text-xl lg:text-lg text-darkRed/70;
 }
