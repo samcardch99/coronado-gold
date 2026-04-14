@@ -33,7 +33,20 @@ if (!hash_equals($calculated, $shopify_hmac)) {
     exit('Unauthorized: invalid HMAC signature');
 }
 
-// ── 4. Disparar el workflow en GitHub via API ──────────────────────────────
+// ── 4. Cooldown: ignorar si ya se disparó un build hace menos de 60 segundos ─
+$cooldown_file = sys_get_temp_dir() . '/cg_last_deploy.txt';
+$cooldown_secs = 60;
+
+if (file_exists($cooldown_file)) {
+    $last = (int) file_get_contents($cooldown_file);
+    if ((time() - $last) < $cooldown_secs) {
+        http_response_code(200);
+        exit('OK: skipped (cooldown activo, deploy reciente en curso)');
+    }
+}
+file_put_contents($cooldown_file, time());
+
+// ── 5. Disparar el workflow en GitHub via API ──────────────────────────────
 $url  = sprintf(
     'https://api.github.com/repos/%s/%s/actions/workflows/%s/dispatches',
     GITHUB_OWNER,
@@ -60,7 +73,7 @@ $response  = curl_exec($ch);
 $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 curl_close($ch);
 
-// ── 5. Responder a Shopify ─────────────────────────────────────────────────
+// ── 6. Responder a Shopify ─────────────────────────────────────────────────
 if ($http_code === 204) {
     http_response_code(200);
     echo 'OK: workflow triggered successfully';
