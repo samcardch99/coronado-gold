@@ -279,26 +279,34 @@ export default function CartSidebar() {
     dispatchCartUpdated(countItems(newCart));
   }, []);
 
+  const showThankYouToast = useCallback(() => {
+    toast.success("Thank you for your order!", {
+      position: "bottom-left",
+      description: "Your purchase was completed successfully. We'll be in touch soon.",
+      duration: 8000,
+    });
+  }, []);
+
   const loadCart = useCallback(async () => {
     try {
-      const existing = await getCart();
+      // ── Detectar vuelta desde Shopify con ?order=success ──────────────────
+      const params = new URLSearchParams(window.location.search);
+      if (params.get("order") === "success") {
+        // Limpiar el parámetro de la URL sin recargar la página
+        const cleanUrl = window.location.pathname;
+        window.history.replaceState({}, "", cleanUrl);
 
-      // Si el carrito tiene completedAt, el usuario completó la compra.
-      // Limpiamos el localStorage y el estado para empezar un carrito nuevo.
-      if (existing?.completedAt) {
+        // Limpiar carrito y mostrar mensaje
         localStorage.removeItem("cg_cart_id");
         await syncCart(null);
-        toast.success("Purchase completed!", {
-          position: "bottom-left",
-          description: "Thank you for your order. Your cart has been cleared.",
-          duration: 6000,
-        });
+        showThankYouToast();
         return;
       }
 
+      const existing = await getCart();
       await syncCart(existing);
     } catch (_) { }
-  }, [syncCart]);
+  }, [syncCart, showThankYouToast]);
 
   // ── Show toast notification ───────────────────────────────────────────────
 
