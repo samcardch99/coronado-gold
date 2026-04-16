@@ -156,22 +156,55 @@ const categoryQuote =
 
                 <div class="mt-6 md:mt-8">
                     <!-- Always active — variantId fetched at runtime if not in static props -->
-                    <button
-                        id="add-to-cart-btn"
-                        data-variant-id={variantId ?? ""}
-                        data-product-handle={product.handle}
-                        data-product-title={product.title}
-                        data-price-amount={product.priceRange.minVariantPrice.amount}
-                        data-price-currency={product.priceRange.minVariantPrice.currencyCode}
-                        data-image-url={mainImage?.url ?? ""}
-                        data-image-alt={mainImage?.altText ?? ""}
-                        data-quantity-available={quantityAvailable ?? ""}
-                        class="relative text-[clamp(0.5rem,0.5rem+1vw,1rem)] md:text-3xl lg:text-3xl lg:py-7 lg:px-12 py-4 px-4 md:py-6 md:px-10 inline-flex items-center justify-center rounded-full bg-[#D4CBC8] shadow-[0_8px_10px_rgba(0,0,0,0.30)] text-darkRed transition-transform duration-300 hover:scale-[1.05] active:scale-95 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                        <span class="btn-label relative z-10 uppercase tracking-wider whitespace-nowrap select-none">
-                            Add to Cart
-                        </span>
-                    </button>
+<button
+    id="add-to-cart-btn"
+    data-variant-id={variantId ?? ""}
+    data-product-handle={product.handle}
+    data-product-title={product.title}
+    data-price-amount={product.priceRange.minVariantPrice.amount}
+    data-price-currency={product.priceRange.minVariantPrice.currencyCode}
+    data-image-url={mainImage?.url ?? ""}
+    data-image-alt={mainImage?.altText ?? ""}
+    data-quantity-available={quantityAvailable ?? ""}
+    class={`
+    text-darkRed! bg-linear-to-br! from-darkRed/25! via-darkRed/12! to-darkRed/8! 
+        relative overflow-hidden cursor-pointer font-medium rounded-full inline-flex items-center justify-center 
+        transition-all duration-300 active:scale-95 hover:scale-[1.05] 
+        text-[clamp(0.5rem,0.5rem+1vw,1rem)] md:text-3xl lg:text-3xl 
+        py-4 px-6 md:py-6 md:px-12 lg:py-7 lg:px-14
+        disabled:opacity-50 disabled:cursor-not-allowed
+    `}
+    style={{
+        /* Fondo con gradiente para el volumen curvo */
+        background: "linear-gradient(145deg, #e6e1de 0%, #dbd4d0 100%)",
+        
+        /* El "borde de cristal" que atrapa la luz */
+        border: "1px solid rgba(255, 255, 255, 0.4)",
+        
+        /* Combinación de sombras: 
+           1. Elevación 3D (exterior)
+           2. Reflejo de luz superior (inset blanco)
+           3. Sombra de profundidad (inset oscuro)
+        */
+        boxShadow: [
+            "0 15px 25px -5px rgba(0, 0, 0, 0.12)", 
+            "0 8px 10px -6px rgba(0, 0, 0, 0.1)",
+            "inset 2px 2px 4px rgba(255, 255, 255, 0.7)", 
+            "inset -2px -2px 5px rgba(0, 0, 0, 0.05)"
+        ].join(", "),
+    }}
+>
+    <span
+        class='pointer-events-none absolute inset-0 z-1 opacity-[0.04] mix-blend-overlay [background-image:url(&apos;data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%"><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(%23noise)"/></svg>&apos;)]'
+    ></span>
+
+    <span 
+        class="btn-label relative z-10 uppercase tracking-[0.15em] whitespace-nowrap select-none text-[#5d2a1f]"
+        style={{ textShadow: "0.5px 0.5px 0px rgba(255,255,255,0.3)" }}
+    >
+        Add to Cart
+    </span>
+</button>
                 </div>
             </div>
 

@@ -58,7 +58,6 @@ import aboutImage2 from "../assets/about-2.jpg";
             </div>
         </div>
 
-        {/* Eliminamos los spans manuales y dejamos el texto limpio */}
         <p
             id="about-para"
             class="text-black text-sm md:text-4xl lg:text-3xl w-full md:w-3/5 xl:w-2/5 leading-[1.4]"
@@ -72,34 +71,42 @@ import aboutImage2 from "../assets/about-2.jpg";
 </section>
 
 <style is:global>
-    /* Estilos para las líneas generadas dinámicamente */
+    /* Estilos optimizados para Safari/iOS */
     .line-mask {
         display: block;
         overflow: hidden;
+        /* El padding previene que Safari corte las descendentes (letras j, g, p) */
+        padding-bottom: 0.2em;
+        margin-bottom: -0.2em;
     }
 
     .line-content {
-        display: block;
+        display: inline-block;
+        width: 100%;
         opacity: 0;
-        transform: translateY(100%);
+        transform: translateY(110%);
         transition:
-            transform 0.6s cubic-bezier(0.22, 1, 0.36, 1),
-            opacity 0.6s linear;
+            transform 0.8s cubic-bezier(0.22, 1, 0.36, 1),
+            opacity 0.8s linear;
+        /* Aceleración de hardware para suavidad en iPhone */
+        will-change: transform;
+        -webkit-font-smoothing: antialiased;
     }
 
     .lines-visible .line-content {
         opacity: 1;
         transform: translateY(0);
-        transition-delay: calc(800ms + (var(--line-index) * 150ms));
+        transition-delay: calc(600ms + (var(--line-index) * 120ms));
     }
 
     .about-reveal {
         opacity: 0;
-        transform: translateX(80px);
+        transform: translateX(60px);
         transition:
-            opacity 1.2s cubic-bezier(0.22, 1, 0.36, 1),
-            transform 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+            opacity 1s cubic-bezier(0.22, 1, 0.36, 1),
+            transform 1s cubic-bezier(0.22, 1, 0.36, 1);
         transition-delay: var(--reveal-delay, 0ms);
+        will-change: transform, opacity;
     }
 
     .about-reveal.is-visible {
@@ -114,33 +121,41 @@ import aboutImage2 from "../assets/about-2.jpg";
         if (!para) return;
 
         const text = para.innerText;
-        const words = text.split(" ");
+        const words = text.split(/\s+/);
         para.innerHTML = "";
 
-        // Creamos un contenedor temporal para medir líneas
+        let lineCount = 0;
         let currentLine = document.createElement("span");
         currentLine.className = "line-mask";
+
         let innerSpan = document.createElement("span");
         innerSpan.className = "line-content";
+        innerSpan.style.setProperty("--line-index", "0");
+
         currentLine.appendChild(innerSpan);
         para.appendChild(currentLine);
 
-        let lineCount = 0;
-        let lastHeight = 0;
+        // Medir altura inicial
+        innerSpan.innerHTML = words[0];
+        let lastHeight = innerSpan.getBoundingClientRect().height;
 
         words.forEach((word, index) => {
-            const previousHTML = innerSpan.innerHTML;
-            innerSpan.innerHTML += (index === 0 ? "" : " ") + word;
+            if (index === 0) return;
 
-            // Si la altura cambia, significa que la palabra saltó de línea
-            if (innerSpan.offsetHeight > lastHeight && index !== 0) {
-                // Deshacemos el cambio en la línea actual
+            const previousHTML = innerSpan.innerHTML;
+            innerSpan.innerHTML += " " + word;
+
+            // getBoundingClientRect es crucial para Safari (subpíxeles)
+            const currentHeight = innerSpan.getBoundingClientRect().height;
+
+            // Margen de tolerancia de 5px para detectar salto de línea real
+            if (currentHeight > lastHeight + 5) {
                 innerSpan.innerHTML = previousHTML;
 
-                // Creamos nueva línea
                 lineCount++;
                 currentLine = document.createElement("span");
                 currentLine.className = "line-mask";
+
                 innerSpan = document.createElement("span");
                 innerSpan.className = "line-content";
                 innerSpan.style.setProperty(
@@ -148,20 +163,24 @@ import aboutImage2 from "../assets/about-2.jpg";
                     lineCount.toString(),
                 );
                 innerSpan.innerHTML = word;
+
                 currentLine.appendChild(innerSpan);
                 para.appendChild(currentLine);
-            }
 
-            lastHeight = innerSpan.offsetHeight;
-            if (index === 0) innerSpan.style.setProperty("--line-index", "0");
+                lastHeight = innerSpan.getBoundingClientRect().height;
+            }
         });
     }
 
-    function init() {
+    async function init() {
         const section = document.getElementById("about");
         const para = document.getElementById("about-para");
 
-        // Primero dividimos el texto según el ancho actual del dispositivo
+        // Esperar a que las tipografías carguen para que las medidas sean exactas
+        if ("fonts" in document) {
+            await document.fonts.ready;
+        }
+
         splitTextIntoLines();
 
         const observer = new IntersectionObserver(
@@ -170,26 +189,32 @@ import aboutImage2 from "../assets/about-2.jpg";
                     if (entry.isIntersecting) {
                         section
                             ?.querySelectorAll(".about-reveal")
-                            .forEach((el) => el.classList.add("is-visible"));
-                        para?.classList.add("lines-visible");
+                            .forEach((el) => {
+                                el.classList.add("is-visible");
+                            });
+
+                        // Pequeño delay para asegurar el render tras el split
+                        setTimeout(() => {
+                            para?.classList.add("lines-visible");
+                        }, 50);
+
                         observer.disconnect();
                     }
                 });
             },
-            { threshold: 0.2 },
+            { threshold: 0.15 },
         );
 
         if (section) observer.observe(section);
     }
 
-    // Ejecutar en carga inicial y en cambios de página (Astro)
+    // Compatibilidad con navegación de Astro y carga inicial
     init();
     document.addEventListener("astro:page-load", init);
 
-    // Opcional: Re-calcular si el usuario rota el teléfono o cambia el tamaño de ventana
     let resizeTimer: any;
     window.addEventListener("resize", () => {
         clearTimeout(resizeTimer);
-        resizeTimer = setTimeout(init, 250);
+        resizeTimer = setTimeout(init, 300);
     });
 </script>

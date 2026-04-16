@@ -633,7 +633,7 @@ export default function CartSidebar() {
 
         {/* Footer */}
         {!isEmpty && (
-          <div className="px-6 py-6 border-t border-darkRed/10 flex flex-col gap-4">
+          <div className="px-6 py-6 border-t border-darkRed/10 flex flex-col gap-4 md:gap-8 lg:gap-8">
             {/* Subtotal */}
             <div className="flex justify-between items-center">
               <span className="text-base md:text-3xl lg:text-2xl font-semibold font-serif uppercase tracking-widest text-darkRed/80">
@@ -656,18 +656,42 @@ export default function CartSidebar() {
             <button
               onClick={handleCheckout}
               disabled={!checkoutUrl || selectedCount === 0 || loading}
-              className={`relative w-full py-4 md:py-8 lg:py-6 inline-flex items-center justify-center rounded-full border border-white/30 bg-linear-to-br from-darkRed/30 via-darkRed/15 to-darkRed/8 shadow-lg backdrop-blur-sm text-darkRed text-xs lg:tracking-[0.3em] uppercase transition-transform duration-300 hover:scale-[1.02]
-                ${(!checkoutUrl || selectedCount === 0 || loading) ? "opacity-50 pointer-events-none" : "cursor-pointer"}`}
+              className={`add-to-cart-btn relative inline-flex items-center justify-center rounded-full transition-all duration-300 active:scale-95 cursor-pointer disabled:opacity-50 
+    /* Dimensiones y Padding solicitado */
+    h-full w-fit self-center lg:py-5 lg:px-10 py-3 px-4 md:py-4 md:px-8
+    /* Colores y Gradientes específicos con !important */
+    text-darkRed! bg-linear-to-br! from-darkRed/25! via-darkRed/12! to-darkRed/8!
+    /* Animación hover */
+    hover:scale-[1.05]
+    ${(!checkoutUrl || selectedCount === 0 || loading) ? "opacity-50 pointer-events-none" : "cursor-pointer"}`}
+              style={{
+                /* Estilos 3D para mantener la coherencia con el efecto cristalino anterior */
+                border: "1px solid rgba(255, 255, 255, 0.4)",
+                boxShadow: [
+                  "0 15px 25px -5px rgba(0, 0, 0, 0.15)",
+                  "0 8px 10px -6px rgba(0, 0, 0, 0.1)",
+                  "inset 2px 2px 4px rgba(255, 255, 255, 0.3)",
+                  "inset -2px -2px 5px rgba(0, 0, 0, 0.05)",
+                ].join(", "),
+              }}
             >
-              <span className="relative z-10 font-light tracking-wider text-base md:text-4xl lg:text-3xl">
-                {selectedCount === 0 ? "Select items to checkout" : (loading ? "Preparing items..." : "Proceed to Payment")}
+              {/* Capa de textura de grano para el efecto visual */}
+              <span
+                className='pointer-events-none absolute inset-0 z-1 opacity-[0.04] mix-blend-overlay rounded-full [background-image:url(&apos;data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%"><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(%23noise)"/></svg>&apos;)]'
+              ></span>
+
+              <span className="relative z-10 font-light uppercase tracking-[0.15em] select-none text-base md:text-4xl lg:text-3xl">
+                {selectedCount === 0
+                  ? "Select items to checkout"
+                  : (loading ? "Preparing items..." : "Proceed to Payment")
+                }
               </span>
             </button>
 
             {/* Continue shopping */}
             <button
               onClick={() => setIsOpen(false)}
-              className="text-sm md:text-3xl lg:text-xl tracking-wider py-1 md:py-10 lg:py-8 text-darkRed/80 md:text-darkRed/40 hover:text-darkRed/70 transition-colors text-center cursor-pointer"
+              className="text-sm md:text-3xl lg:text-xl tracking-wider text-darkRed/80 md:text-darkRed/40 hover:text-darkRed/70 transition-colors text-center cursor-pointer"
             >
               Continue Shopping
             </button>

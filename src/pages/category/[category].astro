@@ -239,36 +239,46 @@ const products = json.data?.collection?.products?.edges || [];
                                     className="md:text-[clamp(2rem,1rem+1vw,3rem)] text-darkRed"
                                 />
                                 {node.variants?.edges?.[0]?.node?.id && (
-                                    <button
-                                        class="add-to-cart-btn h-full aspect-square relative lg:py-5 lg:px-10 py-3 px-4 md:py-4 md:px-8 inline-flex items-center justify-center rounded-full bg-[#D4CBC8] shadow-[0_8px_10px_rgba(0,0,0,0.30)] text-darkRed transition-transform duration-300 hover:scale-[1.05] active:scale-95 cursor-pointer disabled:opacity-50"
-                                        data-variant-id={
-                                            node.variants.edges[0].node.id
-                                        }
-                                        data-product-title={node.title}
-                                        data-price-amount={
-                                            node.priceRange.minVariantPrice
-                                                .amount
-                                        }
-                                        data-price-currency={
-                                            node.priceRange.minVariantPrice
-                                                .currencyCode
-                                        }
-                                        data-image-url={
-                                            node.images.edges[0]?.node.url ?? ""
-                                        }
-                                        data-image-alt={
-                                            node.images.edges[0]?.node
-                                                .altText ?? ""
-                                        }
-                                        data-quantity-available={
-                                            node.variants.edges[0].node
-                                                .quantityAvailable ?? ""
-                                        }
-                                    >
-                                        <span class="btn-label">
-                                            <Plus class="md:h-8 lg:h-6 h-4" />
-                                        </span>
-                                    </button>
+<button
+    class="add-to-cart-btn h-full aspect-square relative inline-flex items-center justify-center rounded-full transition-all duration-300 hover:scale-[1.05] active:scale-95 cursor-pointer disabled:opacity-50 lg:py-5 lg:px-10 py-3 px-4 md:py-4 md:px-8 text-darkRed! bg-linear-to-br! from-darkRed/25! via-darkRed/12! to-darkRed/8! "
+    data-variant-id={node.variants.edges[0].node.id}
+    data-product-title={node.title}
+    data-price-amount={node.priceRange.minVariantPrice.amount}
+    data-price-currency={node.priceRange.minVariantPrice.currencyCode}
+    data-image-url={node.images.edges[0]?.node.url ?? ""}
+    data-image-alt={node.images.edges[0]?.node.altText ?? ""}
+    data-quantity-available={node.variants.edges[0].node.quantityAvailable ?? ""}
+    style={{
+        /* Gradiente para volumen 3D */
+        background: "linear-gradient(145deg, #e6e1de 0%, #dbd4d0 100%)",
+
+        /* Borde de luz sutil */
+        border: "1px solid rgba(255, 255, 255, 0.4)",
+
+        /* 1. Elevación (Sombra caída)
+           2. Sombra de contacto
+           3. Brillo interno superior (Efecto cristal)
+           4. Profundidad interna inferior
+        */
+        boxShadow: [
+            "0 15px 25px -5px rgba(0, 0, 0, 0.15)",
+            "0 8px 10px -6px rgba(0, 0, 0, 0.1)",
+            "inset 2px 2px 4px rgba(255, 255, 255, 0.7)",
+            "inset -2px -2px 5px rgba(0, 0, 0, 0.05)",
+        ].join(", "),
+    }}
+>
+    <span
+        class='pointer-events-none absolute inset-0 z-1 opacity-[0.04] mix-blend-overlay rounded-full [background-image:url(&apos;data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%"><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(%23noise)"/></svg>&apos;)]'
+    ></span>
+
+    <span 
+        class="btn-label relative z-10 text-darkRed"
+        style={{ filter: "drop-shadow(0.5px 0.5px 0px rgba(255,255,255,0.4))" }}
+    >
+        <Plus class="md:h-8 lg:h-6 h-4" />
+    </span>
+</button>
                                 )}
                             </div>
                         </div>

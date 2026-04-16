@@ -99,7 +99,7 @@ import Cart from "../assets/carrito.svg";
   <!-- Modal box -->
   <div
     id="modal-box"
-    class="relative flex flex-col items-center justify-center py-10 px-8 md:p-12 w-[21rem] min-h-[21rem] md:w-[28rem] md:min-h-[28rem] lg:w-[34rem] lg:min-h-[34rem] h-fit rounded-[2rem] shadow-2xl transition-all duration-700 ease-in-out opacity-0 border border-white/20 bg-[#C1BBAB] text-darkRed"
+    class="relative flex flex-col items-center justify-center py-10 px-8 md:p-12 w-[21rem] min-h-[21rem] md:w-[28rem] md:min-h-[28rem] lg:w-[34rem] lg:min-h-[34rem] h-fit rounded-[2rem] shadow-2xl transition-all duration-700 ease-in-out opacity-0 border border-white/20 bg-black/20 text-white"
   >
     <!-- Close icon -->
     <button
@@ -318,7 +318,6 @@ import Cart from "../assets/carrito.svg";
         if (entry.isIntersecting && modalBox && modalOverlay) {
           // Limpiamos todas las clases de temas previos
           modalBox.classList.remove(
-            "bg-[#C1BBAB]",
             "text-darkRed",
             "text-white",
             "backdrop-blur-xl",
@@ -332,10 +331,10 @@ import Cart from "../assets/carrito.svg";
               "backdrop-blur-xl",
               "bg-white/10",
               "bg-stone-200/5",
-              "text-darkRed",
+              "text-white",
             );
             modalOverlay.classList.remove("bg-[#D4CEC7]");
-            modalOverlay.classList.add("bg-transparent");
+            modalOverlay.classList.add("bg-black/10");
           } else if (entry.target.id === "categories") {
             // Categories
             modalBox.classList.add(
@@ -345,11 +344,11 @@ import Cart from "../assets/carrito.svg";
               "text-white",
             );
             modalOverlay.classList.remove("bg-[#D4CEC7]");
-            modalOverlay.classList.add("bg-transparent");
+            modalOverlay.classList.add("bg-black/10");
           } else {
             // Solid Theme
-            modalBox.classList.add("bg-[#C1BBAB]", "text-darkRed");
-            modalOverlay.classList.remove("bg-transparent");
+            modalBox.classList.add("bg-black/10", "text-white");
+            modalOverlay.classList.remove("bg-black/10");
             modalOverlay.classList.add("bg-[#D4CEC7]");
           }
         }
