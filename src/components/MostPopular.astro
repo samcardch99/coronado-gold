@@ -81,11 +81,11 @@ const products = json.data?.collection?.products?.edges || [];
 
 <section
     id="most-popular"
-    class="relative w-full h-screen min-h-150 md:min-h-300 bg-bone overflow-hidden flex flex-col justify-center"
+    class="relative w-full h-screen min-h-150 md:min-h-300 bg-bone overflow-hidden flex flex-col justify-center pt-[3.44rem]"
     data-products={JSON.stringify(products)}
 >
     <div
-        class="w-full h-full md:min-h-250 min-h-100 max-h-[70%] md:max-h-[70%] xl:max-h-[60%] 2xl:max-h-3/4 flex flex-col items-center justify-between"
+        class="w-full h-full md:min-h-250 min-h-100 max-h-[70%] md:max-h-[70%] xl:max-h-[60%] 2xl:max-h-[60%] flex flex-col items-center justify-evenly"
     >
         <h2
             class="text-3xl md-custom:text-5xl md:text-8xl lg:text-7xl text-darkRed tracking-widest z-10"
@@ -99,10 +99,10 @@ const products = json.data?.collection?.products?.edges || [];
             <div class="swiper-wrapper flex items-center">
                 {
                     products.map(({ node: product }) => (
-                        <div class="swiper-slide flex items-center justify-center aspect-square ">
+                        <div class="scale-60 swiper-slide flex items-center justify-center aspect-square ">
                             <a
                                 href={`/products/${product.handle}`}
-                                class="lg:scale-50 w-full relative group h-full rounded-full flex items-center justify-center transition-all duration-700 image-container cursor-pointer"
+                                class="w-full relative group h-full rounded-full flex items-center justify-center transition-all duration-700 image-container cursor-pointer"
                             >
                                 {product.hoverImage?.reference?.image?.url && (
                                     <Image
@@ -299,7 +299,9 @@ const products = json.data?.collection?.products?.edges || [];
             // garantiza que Swiper arranca desde DOM virgen sin importar
             // qué haya cacheado Astro
             if (popularSwiper) {
-                try { popularSwiper.destroy(true, false); } catch (_) {}
+                try {
+                    popularSwiper.destroy(true, false);
+                } catch (_) {}
                 popularSwiper = null;
             }
             swiperEl.innerHTML = originalPopularHTML;

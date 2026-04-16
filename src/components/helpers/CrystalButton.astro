@@ -5,7 +5,7 @@ const { text, href, className, id } = Astro.props;
 <a
     id={id}
     href={href}
-    class={`shadow-lg text-[clamp(0.5rem,0.5rem+1vw,1rem)] md:text-[clamp(2.25rem,1rem+1.5vw,4rem)]  lg:text-3xl  lg:py-7 lg:px-12 py-4 px-4 md:py-6 md:px-10 inline-flex  items-center justify-center rounded-full border border-white/30 bg-linear-to-br from-gray-500/40 via-gray-500/16 to-gray-500/10 [backdrop-filter:url(#glass)] transition-transform duration-800 ease-[cubic-bezier(0.175,0.885,0.32,2.2)] hover:scale-[1.05] ${className}`}
+    class={`text-[clamp(0.5rem,0.5rem+1vw,1rem)] md:text-[clamp(2.25rem,1rem+1.5vw,4rem)] lg:text-3xl lg:py-7 lg:px-12 py-4 px-4 md:py-6 md:px-10 inline-flex items-center justify-center rounded-full bg-[#D4CBC8] shadow-[0_8px_10px_rgba(0,0,0,0.30)] transition-transform duration-800 ease-[cubic-bezier(0.175,0.885,0.32,2.2)] hover:scale-[1.05] ${className}`}
     style="-webkit-backdrop-filter: url(#glass)"
 >
     <!-- subtle noise overlay (replaces ::before) -->

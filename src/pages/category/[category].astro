@@ -236,11 +236,11 @@ const products = json.data?.collection?.products?.edges || [];
                                 <CrystalButton
                                     text="Show Details"
                                     href={`/products/${node.handle}`}
-                                    className="md:text-[clamp(2rem,1rem+1vw,3rem)] text-darkRed  bg-linear-to-br! from-darkRed/25! via-darkRed/12! to-darkRed/8!"
+                                    className="md:text-[clamp(2rem,1rem+1vw,3rem)] text-darkRed"
                                 />
                                 {node.variants?.edges?.[0]?.node?.id && (
                                     <button
-                                        class="add-to-cart-btn h-full aspect-square relative shadow-md lg:py-5 lg:px-10 py-3 px-4 md:py-4 md:px-8 inline-flex items-center justify-center rounded-full bg-linear-to-br from-darkRed/20 via-darkRed/10 to-darkRed/5 backdrop-blur-sm text-darkRed transition-transform duration-300 hover:scale-[1.05] active:scale-95 cursor-pointer disabled:opacity-50"
+                                        class="add-to-cart-btn h-full aspect-square relative lg:py-5 lg:px-10 py-3 px-4 md:py-4 md:px-8 inline-flex items-center justify-center rounded-full bg-[#D4CBC8] shadow-[0_8px_10px_rgba(0,0,0,0.30)] text-darkRed transition-transform duration-300 hover:scale-[1.05] active:scale-95 cursor-pointer disabled:opacity-50"
                                         data-variant-id={
                                             node.variants.edges[0].node.id
                                         }

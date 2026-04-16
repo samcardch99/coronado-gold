@@ -131,7 +131,16 @@ export default function Footer({ className }) {
         <button
           type="submit"
           disabled={isSubmitting}
-          className="bg-[#E0D9D9] cursor-pointer text-darkRed text-lg md:text-5xl lg:text-4xl font-medium rounded-full px-8 py-3 md:px-14 md:py-6 shadow-[2px_2px_5px_rgba(0,0,0,0.1),-2px_-2px_5px_rgba(255,255,255,0.7)] hover:shadow-inner transition-all duration-200 active:scale-95 disabled:opacity-50"
+          className="cursor-pointer text-white text-lg md:text-4xl lg:text-3xl font-medium rounded-full px-6 py-3 md:px-10 md:py-4 transition-all duration-200 active:scale-95 disabled:opacity-50"
+          style={{
+            background: "linear-gradient(145deg, #7a1a0a 0%, #68150A 50%, #520f08 100%)",
+            border: "1px solid rgba(255,255,255,0.22)",
+            boxShadow: [
+              "0 8px 10px rgba(0,0,0,0.30)",
+              "inset 2px 2px 6px rgba(255,255,255,0.18)",
+              "inset -2px -2px 6px rgba(0,0,0,0.25)",
+            ].join(", "),
+          }}
         >
           {isSubmitting ? "SENDING..." : "SEND"}
         </button>
