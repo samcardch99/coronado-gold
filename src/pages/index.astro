@@ -35,17 +35,58 @@ const websiteSchema = {
   "@context": "https://schema.org",
   "@type": "WebSite",
   "name": "Coronado Gold",
-  "url": "https://goldcoronado.com"
+  "url": "https://goldcoronado.com",
+  "potentialAction": {
+    "@type": "SearchAction",
+    "target": {
+      "@type": "EntryPoint",
+      "urlTemplate": "https://goldcoronado.com/category/rings/?q={search_term_string}"
+    },
+    "query-input": "required name=search_term_string"
+  }
+};
+
+const localBusinessSchema = {
+  "@context": "https://schema.org",
+  "@type": "JewelryStore",
+  "name": "Coronado Gold",
+  "url": "https://goldcoronado.com",
+  "logo": "https://goldcoronado.com/logo.svg",
+  "image": "https://goldcoronado.com/og-image.jpg",
+  "telephone": "+17863677012",
+  "email": "coronadogoldjewelry@gmail.com",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "49 W 3rd St",
+    "addressLocality": "Hialeah",
+    "addressRegion": "FL",
+    "postalCode": "33010",
+    "addressCountry": "US"
+  },
+  "geo": {
+    "@type": "GeoCoordinates",
+    "latitude": 25.8576,
+    "longitude": -80.2781
+  },
+  "sameAs": [
+    "https://www.instagram.com/coronado.gold",
+    "https://www.facebook.com/coronadogold"
+  ],
+  "priceRange": "$$",
+  "currenciesAccepted": "USD",
+  "paymentAccepted": "Credit Card, Cash",
+  "hasMap": "https://maps.app.goo.gl/saCvgTfbbfDyzSBWA"
 };
 ---
 
 <Layout
   title="Fine Gold Jewelry — Rings & Necklaces"
-  description="Discover Coronado Gold's fine gold jewelry — handcrafted rings, necklaces and more. Premium 14k and 18k gold pieces crafted with precision and elegance. Shop online."
+  description="Discover Coronado Gold's fine gold jewelry — handcrafted rings and necklaces in 14k and 18k gold. Crafted with precision and elegance. Shop online."
 >
   <Fragment slot="head">
     <script type="application/ld+json" set:html={JSON.stringify(organizationSchema)} />
     <script type="application/ld+json" set:html={JSON.stringify(websiteSchema)} />
+    <script type="application/ld+json" set:html={JSON.stringify(localBusinessSchema)} />
   </Fragment>
 
   <main class="min-h-screen relative">

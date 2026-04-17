@@ -24,17 +24,17 @@ export async function getStaticPaths() {
     return [
         {
             params: { category: "rings" },
-            props: { title: "RINGS", handle: "rings" },
+            props: { title: "RINGS", handle: "rings", seoTitle: "Gold Rings — Handcrafted 14k & 18k Jewelry" },
         },
         {
             params: { category: "necklaces" },
-            props: { title: "NECKLACES", handle: "necklaces" },
+            props: { title: "NECKLACES", handle: "necklaces", seoTitle: "Gold Necklaces — Handcrafted 14k & 18k Jewelry" },
         },
     ];
 }
 
 const { category } = Astro.params;
-const { title, handle } = Astro.props;
+const { title, handle, seoTitle } = Astro.props;
 
 // 2. Llamada a la Storefront API de Shopify
 // Nota: Reemplaza con tus variables de entorno reales
@@ -149,7 +149,7 @@ const itemListSchema = {
 };
 ---
 
-<Layout title={title} description={metaDescription}>
+<Layout title={seoTitle} description={metaDescription}>
     <Fragment slot="head">
         <script type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />
         <script type="application/ld+json" set:html={JSON.stringify(itemListSchema)} />
@@ -168,11 +168,12 @@ const itemListSchema = {
                         className="px-6 py-2.5 rounded-full bg-gray-400/15 border border-darkRed/20 text-darkRed tracking-widest text-sm "
                     />
 
-                    <h1
+                    <p
+                        aria-hidden="true"
                         class="text-3xl md:hidden font-serif tracking-[0.2em] uppercase text-center"
                     >
                         {title}
-                    </h1>
+                    </p>
                 </div>
                 <h1
                     class="hidden md:block absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 text-4xl md:text-6xl lg:text-7xl font-serif tracking-[0.2em] uppercase text-center"

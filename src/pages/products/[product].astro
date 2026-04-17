@@ -92,7 +92,7 @@ const metaDescription = product.description
 
 // Detect category for breadcrumb
 const productHandle = (product.handle as string).toLowerCase();
-const breadcrumbCategory = productHandle.includes("necklace") || productHandle.includes("collar") || productHandle.includes("chain")
+const breadcrumbCategory = productHandle.includes("necklace") || productHandle.includes("collar") || productHandle.includes("chain") || productHandle.includes("cadena")
     ? { name: "Necklaces", handle: "necklaces" }
     : { name: "Rings", handle: "rings" };
 
@@ -108,6 +108,8 @@ const productSchema = {
         "url": `https://goldcoronado.com/products/${product.handle}/`,
         "priceCurrency": product.priceRange.minVariantPrice.currencyCode,
         "price": parseFloat(product.priceRange.minVariantPrice.amount).toFixed(2),
+        "priceValidUntil": new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString().split("T")[0],
+        "itemCondition": "https://schema.org/NewCondition",
         "availability": (quantityAvailable ?? 1) > 0
             ? "https://schema.org/InStock"
             : "https://schema.org/OutOfStock",

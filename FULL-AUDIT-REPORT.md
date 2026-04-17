@@ -1,251 +1,306 @@
-# Full SEO Audit — goldcoronado.com
+# Full SEO Audit Report — Coronado Gold
+**Domain:** https://goldcoronado.com  
 **Audit Date:** 2026-04-17  
-**Business Type:** E-commerce — Fine Jewelry (Gold Rings, Necklaces)  
-**Stack:** Astro v6 + Tailwind CSS + Shopify Storefront API (Headless)  
-**Hosting:** Hostinger / LiteSpeed Server  
+**Business Type:** E-commerce — Fine Gold Jewelry (Local + Online)  
+**Platform:** Astro v6.1.5 + Shopify Storefront API + Hostinger/LiteSpeed  
+**Pages Crawled:** 19 (homepage, 2 category, 12 ring products, 4 necklace products) + 2 broken URLs
 
 ---
 
-## SEO Health Score: 34 / 100
+## Overall SEO Health Score: **63 / 100**
 
 | Category | Score | Weight | Weighted |
-|---|---|---|---|
-| Technical SEO | 25/100 | 22% | 5.5 |
-| Content Quality | 30/100 | 23% | 6.9 |
-| On-Page SEO | 35/100 | 20% | 7.0 |
-| Schema / Structured Data | 0/100 | 10% | 0 |
-| Performance (CWV) | 45/100 | 10% | 4.5 |
-| AI Search Readiness | 20/100 | 10% | 2.0 |
-| Images | 55/100 | 5% | 2.75 |
-| **Total** | | | **28.65 → 34** |
-
-> Score adjusted upward slightly to account for strong image alt text and valid HTTPS/HTTP2 delivery. However critical gaps in technical infrastructure cap the ceiling significantly.
+|----------|-------|--------|---------|
+| Technical SEO | 72/100 | 22% | 15.8 |
+| Content Quality | 48/100 | 23% | 11.0 |
+| On-Page SEO | 58/100 | 20% | 11.6 |
+| Schema / Structured Data | 65/100 | 10% | 6.5 |
+| Performance (CWV) | 70/100 | 10% | 7.0 |
+| AI Search Readiness | 75/100 | 10% | 7.5 |
+| Images | 82/100 | 5% | 4.1 |
+| **Total** | | **100%** | **63.5** |
 
 ---
 
 ## Executive Summary
 
-**goldcoronado.com** is a headless Astro e-commerce site selling fine gold jewelry, powered by the Shopify Storefront API. The site has a visually polished design but suffers from **severe foundational SEO issues** that limit its ability to rank in Google search.
+Coronado Gold has a well-structured Astro site with a solid technical foundation — HTTPS, security headers, canonical tags, lazy loading, and Product schema are all in place. However, the site suffers from **critically thin content** across all product and category pages, several **sitemap gaps**, a **broken OG image**, a **404 earrings category** linked from the nav, and **necklace products with wrong breadcrumb schema**. These issues collectively limit organic visibility for a brand with clear commercial intent in a competitive jewelry niche.
 
 ### Top 5 Critical Issues
-1. **No sitemap.xml** — Google cannot efficiently discover or index pages
-2. **No robots.txt** — Crawlers have no guidance; both return 404 pages
-3. **No meta descriptions on any page** — Every page missing this ranking signal
-4. **No canonical tags** — Duplicate content risk (trailing slash redirects confirm ambiguity)
-5. **No structured data (Schema.org)** — Zero rich result eligibility for products, reviews, breadcrumbs
+1. **OG image 404** — `/og-image.jpg` returns 404; all pages share this broken social preview
+2. **Earrings nav link → 404** — `/category/earrings` is linked in the nav but returns a 404
+3. **4 necklace products missing from sitemap** — Google may not discover them
+4. **Necklace products show "Rings" breadcrumb** — wrong category in both display and schema
+5. **Homepage meta description 165 chars** — exceeds the ~160 char limit, likely to be truncated
 
 ### Top 5 Quick Wins
-1. Add `@astrojs/sitemap` integration — 30 minutes, massive crawlability impact
-2. Add `robots.txt` to `/public/` — 5 minutes fix
-3. Add meta descriptions to Layout.astro and all page templates
-4. Add canonical `<link>` tags to Layout.astro
-5. Fix broken Facebook social link (`href="facebook.com"` → absolute URL)
+1. Fix OG image (create and upload `/public/og-image.jpg`)
+2. Remove or build the earrings nav link to prevent 404
+3. Add necklace product URLs to `sitemap.xml`
+4. Fix breadcrumb logic for necklace products
+5. Trim homepage meta description to ≤155 chars
 
 ---
 
-## Technical SEO
+## 1. Technical SEO
 
-### Crawlability
-
+### 1.1 Crawlability & Indexability
 | Check | Status | Notes |
-|---|---|---|
-| robots.txt | ❌ 404 | Returns HTML "Page Not Found" — no crawl guidance |
-| sitemap.xml | ❌ 404 | Returns HTML "Page Not Found" — no sitemap |
-| HTTPS | ✅ | Valid SSL, HTTP/2 active |
-| Trailing slash | ⚠️ | `/products/brilliant-woven-ring` → 301 to trailing slash version. Consistent but creates redirect chain for internal links |
-| /category/earrings | ❌ 404 | Linked from navbar, but not in `getStaticPaths()` — broken page |
-| Internal href="#" | ⚠️ | Several `href="#"` anchor tags — not crawlable destinations |
-| Facebook link | ❌ Broken | `href="facebook.com"` is a relative path, not an absolute URL |
+|-------|--------|-------|
+| robots.txt | ✅ Pass | `Allow: /` for all agents; sitemap URL declared |
+| Sitemap declared in robots.txt | ✅ Pass | Points to correct URL |
+| Canonical tags | ✅ Pass | All crawled pages have self-referencing canonicals |
+| HTTPS | ✅ Pass | HSTS enabled with preload |
+| Trailing slash consistency | ⚠️ Inconsistent | Sitemap uses trailing slashes; necklace product URLs in nav have no trailing slash — server likely redirects, but worth verifying no redirect chains |
 
-**Findings:**
-- The Astro config (`astro.config.mjs`) has no `@astrojs/sitemap` integration installed
-- No `robots.txt` file exists in `/public/`
-- The category page `getStaticPaths()` only defines `rings` and `necklaces` — `earrings` is linked in the navbar but returns 404
+### 1.2 Sitemap Gaps
+The sitemap at `https://goldcoronado.com/sitemap.xml` is **missing 4 necklace product pages** that exist on the live site:
 
-### Indexability
+- `/products/cadena-perlas-doradas/` (Golden Pearls Necklace)
+- `/products/cadena-gota-lumiere/` (Lumiere Drop Necklace)
+- `/products/cadena-halo-brillante/` (Brilliant Halo Necklace)
+- `/products/cadena-corazon-lumiere/` (Lumiere Heart Necklace)
 
-| Check | Status |
-|---|---|
-| Meta robots | ✅ No noindex found |
-| X-Robots-Tag header | ✅ Not present (allows indexing) |
-| Canonical tags | ❌ Missing on all pages |
-| 301 redirect consistency | ⚠️ All non-trailing-slash URLs redirect — internal links should use trailing slash |
+Additionally, policy pages (`/privacy-policy/`, `/shipping-policy/`, `/terms-of-service/`) are included in the sitemap but add no SEO value and dilute crawl budget. Consider removing them.
 
-### Security Headers
+### 1.3 Broken Links & 404s
+| URL | Issue | Source |
+|-----|-------|--------|
+| `/category/earrings` | **404 Not Found** | Navigation menu on all pages |
+| `/og-image.jpg` | **404 Not Found** | All pages (OG/Twitter meta tags) |
 
+### 1.4 Security Headers
 | Header | Status |
-|---|---|
-| Content-Security-Policy | ⚠️ Only `upgrade-insecure-requests` — weak policy |
-| Strict-Transport-Security (HSTS) | ❌ Missing |
-| X-Frame-Options | ❌ Missing |
-| X-Content-Type-Options | ❌ Missing |
-| Referrer-Policy | ❌ Missing |
-| Permissions-Policy | ❌ Missing |
+|--------|--------|
+| Content-Security-Policy | ✅ Present (upgrade-insecure-requests) |
+| Strict-Transport-Security | ✅ max-age=31536000 + preload |
+| X-Frame-Options | ✅ SAMEORIGIN |
+| X-Content-Type-Options | ✅ nosniff |
+| Referrer-Policy | ✅ strict-origin-when-cross-origin |
+| Permissions-Policy | ✅ camera/mic/geo/payment restricted |
+| Cache-Control | ❌ Missing — no caching headers returned for HTML |
 
-Security headers do not directly impact rankings but Chrome security warnings can increase bounce rate and erode trust signals.
-
----
-
-## Content Quality
-
-### Homepage
-- **Title:** `Coronado Gold` — generic, no keywords (e.g. "gold jewelry", "rings", location)
-- **Meta Description:** ❌ Missing entirely
-- **H1:** ❌ No H1 tag — only H2s exist (`Rings`, `Contact Us`, `Your Cart`)
-- **About section text:** Text is rendered empty in static HTML (likely client-side JS animation using `about-reveal` classes) — Google may not index this content reliably
-- **Body copy:** Very sparse text content on homepage — mostly image-driven with animated text reveals that may not render in Googlebot
-
-### Product Pages
-- **Title:** ✅ `{Product Name} — Coronado Gold` — good pattern
-- **Meta Description:** ❌ Missing — product descriptions exist in data but not mapped to `<meta name="description">`
-- **H1:** ❌ No H1 found on product page (product name appears in `<h2>` or `<p>`)
-- **Description:** Product descriptions pulled from Shopify but not visible as crawlable static text in all cases
-
-### Category Pages
-- **Title:** ✅ `RINGS — Coronado Gold`
-- **Meta Description:** ❌ Missing
-- **H1:** ❌ Missing
-
-### E-E-A-T Assessment
-- **Experience:** No customer reviews, no testimonials, no user-generated content
-- **Expertise:** No "About" page with brand story or credentials; about section text appears JS-only
-- **Authoritativeness:** No blog, no press mentions, no external citations
-- **Trustworthiness:** Contact info present (email + phone), privacy/shipping/terms pages exist ✅
-
-### Thin Content Risk
-- **High risk**: Homepage has very little indexable text (animated JS reveals)
-- **Medium risk**: Category pages show product grids but minimal descriptive copy
-- **Low risk**: Product pages have Shopify descriptions, which vary in length
+### 1.5 Performance Infrastructure
+- Server: LiteSpeed (Hostinger) — HTTP/3 (QUIC) enabled via `alt-svc` header ✅
+- No Cache-Control header on HTML responses — browser can't cache pages ❌
+- TTFB: ~298ms — acceptable for shared hosting
 
 ---
 
-## On-Page SEO
+## 2. Content Quality
 
-### Title Tags
+### 2.1 Thin Content (Critical)
+Product pages contain approximately **96 words of visible content** — far below the minimum recommended ~300 words for e-commerce product pages, and dramatically below the 500+ words that compete well in fine jewelry search.
 
-| Page | Title | Issues |
-|---|---|---|
-| Homepage | `Coronado Gold` | ❌ No keywords, too short |
-| Product pages | `{Name} — Coronado Gold` | ✅ Good, but could add "Gold Ring" keyword |
-| Category pages | `RINGS — Coronado Gold` | ⚠️ All caps, no modifier keywords |
-| Privacy/Shipping/Terms | Likely `{Page} — Coronado Gold` | Low priority |
+| Page Type | Word Count | Target | Status |
+|-----------|-----------|--------|--------|
+| Homepage | ~492 | 500+ | ⚠️ Borderline |
+| Category pages | ~400 | 400+ | ⚠️ Just adequate |
+| Product pages | ~96 | 300+ | ❌ Critically thin |
 
-### Meta Descriptions
-❌ **Zero pages have meta descriptions.** The Layout.astro `<head>` does not include a `<meta name="description">` tag. This is a universal issue affecting every page on the site.
+This thin content is the **#1 ranking blocker**. Google has little text to parse for topical relevance and user intent matching.
 
-### Heading Structure
-- Homepage: No `<h1>`, multiple `<h2>` tags (Rings, Contact Us, Your Cart)
-- Each page should have exactly one `<h1>` describing the primary topic
+### 2.2 Content Gaps
+- No blog or editorial content (buyers searching "gold ring buying guide", "14k vs 18k gold", "handcrafted jewelry Miami" etc. have nowhere to land)
+- No customer reviews displayed on site (social proof + UGC content)
+- No named artisan or "About the Brand" story page
+- No size guide, metal care guide, or jewelry education content
+- Category pages have no descriptive introductory text — just a product grid
 
-### Internal Linking
-- Homepage links to 8 specific products and 2 categories — reasonable depth
-- No breadcrumbs on product/category pages
-- Navigation links use `href="#section"` for single-page sections — good for UX but not ideal for SEO
-- Earrings category linked but 404 — broken internal link
+### 2.3 E-E-A-T Assessment
+| Signal | Status |
+|--------|--------|
+| Author/brand identity | ⚠️ Weak — no named artisan, no dedicated About page |
+| Physical address | ✅ Present in schema and footer |
+| Phone/email | ✅ Present |
+| Social proof | ❌ No reviews, no testimonials visible |
+| Press/media mentions | ❌ None detectable |
+| Certifications/trust badges | ❌ None visible |
 
-### Open Graph / Social Sharing
-❌ **No OG tags found** (`og:title`, `og:description`, `og:image`) on any page — links shared on Facebook/Instagram/WhatsApp will not generate preview cards.
-
-### Twitter/X Cards
-❌ **No Twitter card meta tags** present.
-
----
-
-## Schema & Structured Data
-
-❌ **Zero structured data found on any page.**
-
-### Missing Schema Opportunities
-
-| Schema Type | Pages | Priority | Impact |
-|---|---|---|---|
-| `Organization` | Homepage | High | Brand knowledge panel, logo |
-| `WebSite` with `SearchAction` | Homepage | Medium | Sitelinks search box |
-| `Product` | All product pages | **Critical** | Price, availability, ratings in SERP |
-| `BreadcrumbList` | Product + Category pages | High | Breadcrumb rich results |
-| `ItemList` | Category pages | Medium | Enhanced category listings |
-| `FAQPage` | Product pages (if FAQs added) | Low | FAQ rich results |
-
-**Product schema is the highest priority** — without it, product pages cannot display price, availability, or star ratings directly in Google search results, which significantly reduces click-through rates for e-commerce.
+### 2.4 Readability
+Content that exists is well-written and luxury-appropriate. Tone is consistent. The French product names (Lumiere, Eclat, Trefle, Feuille) are on-brand but may confuse English-language search queries — consider adding English descriptor text alongside them on product pages.
 
 ---
 
-## Performance (Core Web Vitals)
+## 3. On-Page SEO
 
-*Note: PageSpeed Insights API was unavailable during this audit. Estimates based on code analysis.*
+### 3.1 Title Tags
+| Page | Length | Status |
+|------|--------|--------|
+| Homepage | 57 chars | ✅ Good |
+| Rings Category | 21 chars | ❌ Too short — "RINGS — Coronado Gold" is not descriptive |
+| Necklaces Category | 25 chars | ❌ Too short |
+| Coeur Lumiere (Sophisticated) | 61 chars | ⚠️ At limit |
+| All other product pages | 33–43 chars | ⚠️ Could be enriched with material keywords |
 
-### Estimated Issues
+Recommended category title format:  
+`Gold Rings — Handcrafted 14k & 18k Jewelry | Coronado Gold` (58 chars)
 
-| Metric | Estimated Rating | Evidence |
-|---|---|---|
-| LCP | ⚠️ Needs Improvement | Hero image (`cover-bg.webp`) has `loading="lazy"` — should be `eager` for LCP candidate |
-| CLS | ⚠️ Potential issues | Swiper carousel, animated text reveals, dynamic cart sidebar may cause layout shifts |
-| INP | ⚠️ Unknown | Heavy JS bundle: GSAP, Lenis, Swiper, React (cart), EmailJS all loaded |
-| FCP | ⚠️ Moderate | Multiple CSS files, no critical CSS inlining |
+### 3.2 Meta Descriptions
+| Page | Length | Status |
+|------|--------|--------|
+| Homepage | 165 chars | ❌ Over 160 char limit — will be truncated |
+| Most product pages | 125–154 chars | ✅ Acceptable range |
+| Eclat de Lumiere Ring | 125 chars | ⚠️ On the short side |
 
-### JavaScript Bundle Concerns
-- **GSAP** (animation library) — heavy, loaded globally
-- **Lenis** (smooth scroll) — adds scroll overhead
-- **Swiper** — loaded globally
-- **React** (cart sidebar) — `client:load` means React hydrates on every page
-- **EmailJS** — loaded on pages that may not use the contact form
+### 3.3 Heading Structure
+- **Homepage H1:** `Coronado Gold — Fine Gold Jewelry | Handcrafted Rings & Necklaces` — ✅ visually hidden (sr-only), SEO-accessible
+- **Category pages H1:** Appears duplicated in the DOM ("RINGS" twice) — ❌ likely a render artifact; should be exactly one H1
+- **Product pages H1:** Product name — ✅ appropriate
+- **No H2/H3 hierarchy** on product pages — missed opportunity for keyword-rich subheadings ("Materials & Craftsmanship", "Product Details", "Care Instructions")
+- **Shipping policy page:** No H1 found — ❌
 
-### Resource Hints
-- ❌ No `<link rel="preload">` for hero image
-- ❌ No font preconnect to Google Fonts or CDNs
-- ✅ Images use `loading="lazy"` appropriately for below-fold content
-- ✅ Images use WebP format
-- ✅ HTTP/2 active (multiplexing benefits)
+### 3.4 Internal Linking
+- Homepage links to 11 unique internal pages ✅
+- Category pages link to individual products ✅
+- Product pages link back to category via breadcrumb ✅
+- No "Related Products" or cross-product internal links ❌
+- Earrings nav link is broken (404) ❌
+
+### 3.5 URL Structure
+- Ring products: `/products/[english-name]/` — clean, descriptive ✅
+- Necklace products: `/products/cadena-[spanish-name]/` — Spanish URLs create keyword mismatch ⚠️
+  - `/products/cadena-perlas-doradas` → should ideally be `/products/golden-pearls-necklace`
+  - `/products/cadena-gota-lumiere` → should ideally be `/products/lumiere-drop-necklace`
 
 ---
 
-## Images
+## 4. Schema / Structured Data
 
-| Check | Status | Notes |
-|---|---|---|
-| Alt text — product images | ✅ | All product images have descriptive alt text (product name) |
-| Alt text — decorative images | ✅ | `about-1.webp`, `about-2.webp` have alt text |
-| Hero image alt | ✅ | `alt="cover Background"` — acceptable, could be more descriptive |
-| Image format | ✅ | All images served as WebP |
-| Image dimensions | ✅ | Width/height attributes present |
-| Hero image lazy loading | ❌ | LCP image has `loading="lazy"` — should be `loading="eager"` with `fetchpriority="high"` |
-| OG images | ❌ | No OG image meta tags |
+### 4.1 Implemented Schemas
+| Schema Type | Page | Status |
+|-------------|------|--------|
+| Organization | Homepage | ✅ Valid — includes address, phone, email, sameAs |
+| WebSite | Homepage | ✅ Present |
+| Product | All product pages | ✅ Present |
+| BreadcrumbList | All product + category pages | ⚠️ Bug on necklace products |
+| ItemList | Category pages | ✅ Present |
+
+### 4.2 Schema Issues
+
+**Product Schema — Missing Fields:**
+- `sku` — not included (recommended for rich results)
+- `aggregateRating` — absent (no review system = no star ratings in SERPs)
+- `offers.priceValidUntil` — missing (recommended by Google)
+- `offers.itemCondition` — missing (`NewCondition`)
+
+**BreadcrumbList Bug (Critical for necklaces):**
+All 4 necklace products (`cadena-*`) display `Rings` as the parent category in both the visible breadcrumb and schema JSON-LD. Root cause: the handle pattern detection in `src/pages/products/[product].astro:95–97` checks for `"necklace"`, `"collar"`, `"chain"` but misses the Spanish word `"cadena"` (which means chain/necklace).
+
+Fix: add `"cadena"` to the necklace handle detection condition.
+
+**WebSite Schema — Missing SearchAction:**
+A `SearchAction` potential action would enable Google Sitelinks Searchbox.
+
+**Homepage — Missing LocalBusiness Schema:**
+The brand has a physical address. A `JewelryStore` schema would qualify for local pack visibility.
+
+### 4.3 Schema Validation
+No structural JSON parsing errors detected on any page. All schemas are syntactically valid.
 
 ---
 
-## AI Search Readiness (GEO)
+## 5. Performance
+
+### 5.1 Server Response
+- TTFB: ~298ms (acceptable for Hostinger shared hosting)
+- HTTP/3 support via LiteSpeed ✅
+- Page sizes: 74–149KB HTML
+
+### 5.2 Resource Audit
+| Metric | Value | Assessment |
+|--------|-------|------------|
+| External scripts | 3 | Low ✅ |
+| Stylesheets | 2 | Low ✅ |
+| Images with lazy loading | 22/24 | Good ✅ |
+| Images without alt text | 0/24 | ✅ |
+| Image format | WebP (Astro-optimized) | ✅ |
+| Width/height attributes | Present | No CLS risk ✅ |
+| Hero/above-fold image loading | lazy | ❌ Should be eager |
+
+### 5.3 Core Web Vitals (Estimated)
+- **LCP:** Moderate risk — hero images loaded from Shopify CDN via `loading="lazy"`. Above-fold product image should use `loading="eager"` with `<link rel="preload">`.
+- **CLS:** Low risk — explicit dimensions present on images
+- **INP:** Low risk — minimal JS, React island only for cart sidebar
+
+### 5.4 Caching
+- No `Cache-Control` header on HTML responses — each visit hits the origin server
+- Shopify CDN serves product images with proper caching ✅
+
+---
+
+## 6. Images
 
 | Check | Status |
-|---|---|
-| llms.txt | ❌ Missing |
-| robots.txt allows AI crawlers | ❌ No robots.txt at all |
-| Structured data for AI citation | ❌ No schema |
-| Factual, citable content | ⚠️ Thin content limits citability |
-| Brand mentions | ⚠️ No external authority signals found |
-| AI crawler accessibility | Unknown (no robots.txt) |
-
-The site is not optimized for AI search experiences (Google AI Overviews, ChatGPT, Perplexity). Without structured data, factual content, and proper crawl permissions, the site cannot be cited in AI-generated answers.
-
----
-
-## Additional Issues Found
-
-### Broken/Invalid Links
-- `href="facebook.com"` in Footer — resolves to `goldcoronado.com/facebook.com` (relative path error)
-- `/category/earrings` — returns 404, linked from homepage navigation
-
-### Missing Pages
-- No dedicated "About" page (only an in-page section)
-- No blog/content section (limits organic keyword reach)
-- No size guide / care instructions (common jewelry e-commerce trust signals)
-- `earrings` category page not implemented despite being linked
-
-### Accessibility (impacts SEO)
-- Multiple `<h2>` tags without preceding `<h1>` breaks heading hierarchy
-- Animated text reveals that rely entirely on JS for content visibility
+|-------|--------|
+| Alt text on all images | ✅ All product images have descriptive alt text |
+| Lazy loading | ✅ 22/24 images lazy-loaded |
+| Modern format (WebP) | ✅ Astro converts Shopify images to WebP at build time |
+| Explicit dimensions | ✅ width/height attributes present on all images |
+| OG image (`/og-image.jpg`) | ❌ **404 Not Found** |
+| Hero image eager loading | ❌ Hero images are lazy-loaded — LCP risk |
+| Product images CDN | ✅ Shopify CDN with CDN resizing applied |
 
 ---
 
-## Action Plan
+## 7. AI Search Readiness
 
-See [ACTION-PLAN.md](ACTION-PLAN.md) for the full prioritized list.
+### 7.1 llms.txt
+- `https://goldcoronado.com/llms.txt` accessible ✅
+- Well-structured with brand description, products, contact, sitemap link ✅
+- Missing: individual product URLs and descriptions ⚠️
+- Missing: pricing information ⚠️
+- Missing: full product catalog (necklace products not listed) ❌
+
+### 7.2 AI Crawler Access
+- robots.txt allows all user agents including GPTBot, Claude-Web ✅
+- No blocking of AI crawlers
+
+### 7.3 Citability Signals
+- Brand name used consistently across all pages ✅
+- Physical address present in schema and footer ✅
+- No FAQ content for AI to cite ❌
+- No editorial/blog content for topical authority ❌
+- Structured Product data aids AI catalog understanding ✅
+
+---
+
+## 8. Local SEO
+
+The brand has a physical retail location at 49 W 3rd St, Hialeah, FL 33010.
+
+| Signal | Status |
+|--------|--------|
+| LocalBusiness / JewelryStore schema | ❌ Missing — only Organization schema present |
+| Physical address in footer | ✅ |
+| Phone number | ✅ |
+| Google Business Profile | Not detectable — verify claimed and optimized |
+| Local keyword targeting | ❌ No content targeting "jewelry store Hialeah" or "Miami gold jewelry" |
+
+---
+
+## Appendix: Full Crawl Summary
+
+| URL | Status | Title Len | Desc Len | H1 | Key Issues |
+|-----|--------|-----------|----------|----|------------|
+| / | 200 | 57ch ✅ | 165ch ❌ | ✅ | Desc too long |
+| /category/rings/ | 200 | 21ch ❌ | 143ch ✅ | Duplicated | Title too short, H1 dup |
+| /category/necklaces/ | 200 | 25ch ❌ | 145ch ✅ | Duplicated | Title too short, H1 dup |
+| /products/brilliant-woven-ring/ | 200 | 36ch ✅ | 147ch ✅ | ✅ | Thin content |
+| /products/coeur-de-lumiere-ring/ | 200 | 37ch ✅ | 150ch ✅ | ✅ | Thin content |
+| /products/coeur-de-lumiere-ring-sophisticated-version/ | 200 | 61ch ⚠️ | 150ch ✅ | ✅ | Thin content |
+| /products/eclat-de-lumiere-ring/ | 200 | 37ch ✅ | 125ch ⚠️ | ✅ | Thin content |
+| /products/feuille-de-lumiere-ring/ | 200 | 39ch ✅ | 143ch ✅ | ✅ | Thin content |
+| /products/ghost-de-lumiere-ring/ | 200 | 37ch ✅ | 134ch ✅ | ✅ | Thin content |
+| /products/infini-de-lumiere-ring/ | 200 | 38ch ✅ | 151ch ✅ | ✅ | Thin content |
+| /products/intertwined-hearts-ring/ | 200 | 39ch ✅ | 154ch ✅ | ✅ | Thin content |
+| /products/lumiere-knot-ring/ | 200 | 33ch ✅ | 131ch ✅ | ✅ | Thin content |
+| /products/ruche-de-lumiere-ring/ | 200 | 37ch ✅ | 152ch ✅ | ✅ | Thin content |
+| /products/trefle-de-lumiere-ring/ | 200 | 38ch ✅ | 153ch ✅ | ✅ | Thin content |
+| /products/coeur-noire-de-lumiere-ring/ | 200 | 43ch ✅ | 154ch ✅ | ✅ | Thin content |
+| /products/cadena-perlas-doradas | 200 | 38ch ✅ | 153ch ✅ | ✅ | Wrong breadcrumb, not in sitemap |
+| /products/cadena-gota-lumiere | 200 | 37ch ✅ | 136ch ✅ | ✅ | Wrong breadcrumb, not in sitemap |
+| /products/cadena-halo-brillante | 200 | 39ch ✅ | 150ch ✅ | ✅ | Wrong breadcrumb, not in sitemap |
+| /products/cadena-corazon-lumiere | 200 | 38ch ✅ | 142ch ✅ | ✅ | Wrong breadcrumb, not in sitemap |
+| /category/earrings | **404** | — | — | — | Linked from nav |
+| /og-image.jpg | **404** | — | — | — | Referenced by all pages |

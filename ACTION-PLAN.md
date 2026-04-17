@@ -1,301 +1,375 @@
-# SEO Action Plan — goldcoronado.com
+# SEO Action Plan — Coronado Gold
 **Generated:** 2026-04-17  
-**Overall Score:** 34/100
+**Overall Score:** 63/100  
+**Target Score:** 80+/100
 
 ---
 
-## CRITICAL — Fix Immediately (Blocking Indexing)
+## CRITICAL — Fix Immediately
 
-### 1. Add robots.txt
-**File:** `public/robots.txt`  
-**Effort:** 5 minutes  
-**Impact:** Crawlability, trust signal for all search engines
-
-```
-User-agent: *
-Allow: /
-
-Sitemap: https://goldcoronado.com/sitemap-index.xml
-```
-
----
-
-### 2. Add XML Sitemap
-**File:** `astro.config.mjs`  
+### C1. Fix Broken OG Image
+**Impact:** Every page on the site references `/og-image.jpg` for social sharing. It returns 404.  
 **Effort:** 30 minutes  
-**Impact:** Google discovers all pages faster, improves indexation rate
 
-Install and configure `@astrojs/sitemap`:
-```bash
-npm install @astrojs/sitemap
-```
-
-Update `astro.config.mjs`:
-```js
-import sitemap from '@astrojs/sitemap';
-
-export default defineConfig({
-  site: 'https://goldcoronado.com',
-  integrations: [react(), sitemap()],
-  // ... rest of config
-});
-```
+- Create a branded 1200×630px OG image (brand logo on a gold/dark background)
+- Save as `public/og-image.jpg`
+- Rebuild and redeploy
 
 ---
 
-### 3. Fix /category/earrings → 404
-**File:** `src/pages/category/[category].astro`  
-**Effort:** 30 minutes (+ Shopify collection setup)  
-**Impact:** Fixes broken internal link, enables earrings category to rank
+### C2. Fix Earrings Nav Link (404)
+**Impact:** All pages link to `/category/earrings` which returns 404 — bad for UX and crawlers.  
+**Effort:** 15 minutes  
+**File:** `src/components/Navbar.astro`
 
-Add earrings to `getStaticPaths()`:
-```js
-{ params: { category: "earrings" }, props: { title: "EARRINGS", handle: "earrings" } }
+Options:
+- **If earrings category will exist:** Build the `/category/earrings` page (add to `getStaticPaths` in `src/pages/category/[category].astro`)
+- **If not planned:** Remove the earrings link from the nav immediately
+
+---
+
+### C3. Fix Necklace Breadcrumb Bug
+**Impact:** All 4 necklace products (`cadena-*`) show "Rings" as the parent category in the breadcrumb and in JSON-LD schema — misleads Google and users.  
+**Effort:** 5 minutes  
+**File:** `src/pages/products/[product].astro` — lines 95–97
+
+Current code:
+```ts
+const breadcrumbCategory = productHandle.includes("necklace") || productHandle.includes("collar") || productHandle.includes("chain")
+    ? { name: "Necklaces", handle: "necklaces" }
+    : { name: "Rings", handle: "rings" };
 ```
-Ensure a corresponding Shopify collection with handle `earrings` exists.
+
+Fix — add `"cadena"` to the condition:
+```ts
+const breadcrumbCategory = productHandle.includes("necklace") || productHandle.includes("collar") || productHandle.includes("chain") || productHandle.includes("cadena")
+    ? { name: "Necklaces", handle: "necklaces" }
+    : { name: "Rings", handle: "rings" };
+```
+
+Same fix applies to the `categoryQuote` logic on line 150 (already handles `"cadena"` there — verify the breadcrumb fix is also applied).
+
+---
+
+### C4. Add Necklace Products to Sitemap
+**Impact:** 4 live necklace product pages are not in the sitemap — Google may not discover them.  
+**Effort:** 10 minutes  
+**File:** `public/sitemap.xml`
+
+Add these URLs to the sitemap:
+```xml
+<!-- Necklace Products -->
+<url>
+  <loc>https://goldcoronado.com/products/cadena-perlas-doradas/</loc>
+  <lastmod>2026-04-17</lastmod>
+</url>
+<url>
+  <loc>https://goldcoronado.com/products/cadena-gota-lumiere/</loc>
+  <lastmod>2026-04-17</lastmod>
+</url>
+<url>
+  <loc>https://goldcoronado.com/products/cadena-halo-brillante/</loc>
+  <lastmod>2026-04-17</lastmod>
+</url>
+<url>
+  <loc>https://goldcoronado.com/products/cadena-corazon-lumiere/</loc>
+  <lastmod>2026-04-17</lastmod>
+</url>
+```
 
 ---
 
 ## HIGH — Fix Within 1 Week
 
-### 4. Add Meta Descriptions to All Pages
-**File:** `src/layouts/Layout.astro`  
-**Effort:** 1-2 hours  
-**Impact:** Click-through rates in SERP, social sharing previews
+### H1. Fix Homepage Meta Description Length
+**Impact:** 165-char description gets truncated in SERPs — wastes the CTA.  
+**Effort:** 5 minutes  
+**File:** `src/pages/index.astro` — line 44
 
-Pass description as a prop to Layout and add to `<head>`:
-```astro
----
-const { title, description } = Astro.props;
----
-<meta name="description" content={description || "Shop handcrafted gold jewelry — rings, necklaces and earrings by Coronado Gold."} />
+Current (165 chars):
+```
+Discover Coronado Gold's fine gold jewelry — handcrafted rings, necklaces and more. Premium 14k and 18k gold pieces crafted with precision and elegance. Shop online.
 ```
 
-Then pass descriptive descriptions from each page:
-- Homepage: `"Discover Coronado Gold's handcrafted fine gold jewelry collection. Shop rings, necklaces, and earrings crafted with precision and elegance."`
-- Product pages: Use first 155 characters of `product.description`
-- Category pages: `"Shop our collection of gold {category}. Handcrafted fine jewelry by Coronado Gold."`
-
----
-
-### 5. Add Canonical Tags
-**File:** `src/layouts/Layout.astro`  
-**Effort:** 30 minutes  
-**Impact:** Prevents duplicate content penalties from trailing-slash variants
-
-```astro
-<link rel="canonical" href={new URL(Astro.url.pathname, "https://goldcoronado.com").toString()} />
+Suggested (under 155 chars):
+```
+Coronado Gold — handcrafted 14k & 18k gold rings and necklaces made with precision and elegance. Shop fine jewelry online.
 ```
 
 ---
 
-### 6. Add H1 Tags to Every Page
-**Effort:** 1 hour  
-**Impact:** Heading structure is a ranking signal
-
-- Homepage: Add `<h1 class="sr-only">Coronado Gold — Fine Gold Jewelry</h1>` (visually hidden but crawlable)
-- Product pages: Change product title element from `<h2>` to `<h1>`
-- Category pages: Change category title from `<h2>` or `<p>` to `<h1>`
-
----
-
-### 7. Add Open Graph + Twitter Card Meta Tags
-**File:** `src/layouts/Layout.astro`  
-**Effort:** 1 hour  
-**Impact:** Rich previews when links are shared on social media (critical for jewelry brand)
-
-```astro
----
-const { title, description, image } = Astro.props;
-const ogImage = image || "https://goldcoronado.com/og-default.jpg";
-const ogTitle = title ? `${title} — Coronado Gold` : "Coronado Gold";
----
-<meta property="og:title" content={ogTitle} />
-<meta property="og:description" content={description || "Handcrafted fine gold jewelry."} />
-<meta property="og:image" content={ogImage} />
-<meta property="og:type" content="website" />
-<meta property="og:url" content={Astro.url.toString()} />
-<meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:title" content={ogTitle} />
-<meta name="twitter:description" content={description || "Handcrafted fine gold jewelry."} />
-<meta name="twitter:image" content={ogImage} />
-```
-
-Create a default OG image (`public/og-default.jpg`) — 1200×630px with brand imagery.
-
----
-
-### 8. Fix Homepage Title Tag — Add Keywords
-**File:** `src/layouts/Layout.astro`  
+### H2. Improve Category Page Title Tags
+**Impact:** "RINGS — Coronado Gold" (21 chars) is too short and misses ranking keywords.  
 **Effort:** 10 minutes  
-**Impact:** Primary keyword signal for homepage
+**File:** `src/pages/category/[category].astro`
 
-Change fallback title from `"Coronado Gold"` to `"Coronado Gold — Handcrafted Gold Jewelry | Rings & Necklaces"` (under 60 chars preferred, but descriptive).
+Add descriptive meta descriptions to each category's `getStaticPaths` entry:
+
+```ts
+{ params: { category: "rings" }, props: { 
+    title: "Gold Rings — Handcrafted 14k & 18k Jewelry", 
+    handle: "rings",
+    description: "Shop handcrafted gold rings in 14k and 18k gold. Elegant designs for every style and occasion. Free shipping on orders over $X." 
+}},
+{ params: { category: "necklaces" }, props: { 
+    title: "Gold Necklaces — Handcrafted Fine Jewelry", 
+    handle: "necklaces",
+    description: "Discover Coronado Gold's handcrafted gold necklaces in 14k and 18k gold. Timeless designs for every occasion."
+}},
+```
 
 ---
 
-### 9. Fix Broken Facebook Link
-**File:** `src/components/Footer.astro`  
-**Effort:** 5 minutes
+### H3. Add LocalBusiness / JewelryStore Schema to Homepage
+**Impact:** Required for local pack eligibility and AI citation of your business.  
+**Effort:** 20 minutes  
+**File:** `src/pages/index.astro`
 
-Change `href="facebook.com"` to `href="https://www.facebook.com/coronadogold"` (or actual Facebook URL).
+Replace or extend the `organizationSchema` to use `JewelryStore` type:
 
----
-
-### 10. Add Product Schema (JSON-LD) to Product Pages
-**File:** `src/pages/products/[product].astro`  
-**Effort:** 2-3 hours  
-**Impact:** Price, availability, and ratings shown directly in Google search results — highest ROI schema for e-commerce
-
-Add to `<head>` in product page layout:
-```astro
-<script type="application/ld+json" set:html={JSON.stringify({
+```json
+{
   "@context": "https://schema.org",
-  "@type": "Product",
-  "name": product.title,
-  "description": product.description,
-  "image": mainImage?.url,
-  "brand": {
-    "@type": "Brand",
-    "name": "Coronado Gold"
+  "@type": "JewelryStore",
+  "name": "Coronado Gold",
+  "url": "https://goldcoronado.com",
+  "logo": "https://goldcoronado.com/logo.svg",
+  "image": "https://goldcoronado.com/og-image.jpg",
+  "telephone": "+17863677012",
+  "email": "coronadogoldjewelry@gmail.com",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "49 W 3rd St",
+    "addressLocality": "Hialeah",
+    "addressRegion": "FL",
+    "postalCode": "33010",
+    "addressCountry": "US"
   },
-  "offers": {
-    "@type": "Offer",
-    "price": product.priceRange.minVariantPrice.amount,
-    "priceCurrency": product.priceRange.minVariantPrice.currencyCode,
-    "availability": product.variants.edges[0]?.node.quantityAvailable > 0
-      ? "https://schema.org/InStock"
-      : "https://schema.org/OutOfStock",
-    "url": `https://goldcoronado.com/products/${product.handle}/`
+  "geo": {
+    "@type": "GeoCoordinates",
+    "latitude": 25.858,
+    "longitude": -80.279
+  },
+  "openingHoursSpecification": [...],
+  "sameAs": [
+    "https://www.instagram.com/coronado.gold",
+    "https://www.facebook.com/coronadogold"
+  ],
+  "priceRange": "$$"
+}
+```
+
+---
+
+### H4. Set Hero Image to Eager Loading
+**Impact:** Improves LCP score — the hero product image is the likely Largest Contentful Paint element.  
+**Effort:** 10 minutes  
+**Files:** `src/components/Cover.astro`, `src/pages/products/[product].astro`
+
+For the above-fold hero image:
+```astro
+<!-- Change from -->
+<Image src={...} loading="lazy" ... />
+<!-- To -->
+<Image src={...} loading="eager" fetchpriority="high" ... />
+```
+
+Also add a `<link rel="preload">` hint in the `<head>` for the hero image.
+
+---
+
+### H5. Fix Duplicate H1 on Category Pages
+**Impact:** Having two H1 tags confuses Google's understanding of page topic.  
+**Effort:** 15 minutes  
+**File:** `src/pages/category/[category].astro`
+
+Identify the source of the duplicate H1 (likely rendered by both the Layout and the category component). Remove one — the visual heading should be `<h2>` or keep the `<h1>` and ensure only one appears in the final DOM.
+
+---
+
+### H6. Add SearchAction to WebSite Schema
+**Impact:** Enables Google Sitelinks Searchbox in branded search results.  
+**Effort:** 10 minutes  
+**File:** `src/pages/index.astro`
+
+```json
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "Coronado Gold",
+  "url": "https://goldcoronado.com",
+  "potentialAction": {
+    "@type": "SearchAction",
+    "target": {
+      "@type": "EntryPoint",
+      "urlTemplate": "https://goldcoronado.com/search?q={search_term_string}"
+    },
+    "query-input": "required name=search_term_string"
   }
-})} />
+}
 ```
 
 ---
 
 ## MEDIUM — Fix Within 1 Month
 
-### 11. Fix Hero Image LCP
-**File:** `src/components/Cover.astro`  
-**Effort:** 15 minutes  
-**Impact:** LCP improvement — potentially significant
+### M1. Expand Product Page Content (Thin Content)
+**Impact:** Product pages have ~96 words. Aim for 300–500 words to compete for jewelry keywords.  
+**Effort:** 2–4 hours (copywriting across 16 products)
 
-Change the hero `<img>` from `loading="lazy"` to `loading="eager" fetchpriority="high"`.
+For each product page, add:
+- **Materials section:** "Crafted in [X]k gold with [stone/finish details]"
+- **Style notes:** "Perfect for [occasions] — pairs well with [styles]"
+- **Care instructions:** "Store in a dry place, clean with a soft cloth..."
+- **Size/measurement info:** Ring size chart, necklace length guide
+- **Occasion tags:** Anniversary, birthday, everyday wear
+
+Update Shopify product descriptions — they'll pull through to the Astro product page automatically.
 
 ---
 
-### 12. Add Organization Schema to Homepage
-**File:** `src/pages/index.astro` or Layout  
-**Effort:** 1 hour
+### M2. Add Category Page Intro Text
+**Impact:** Category pages currently have zero descriptive text above the product grid.  
+**Effort:** 1 hour  
+**File:** `src/pages/category/[category].astro`
 
-```json
-{
-  "@context": "https://schema.org",
-  "@type": "Organization",
-  "name": "Coronado Gold",
-  "url": "https://goldcoronado.com",
-  "logo": "https://goldcoronado.com/logo.svg",
-  "contactPoint": {
-    "@type": "ContactPoint",
-    "telephone": "+1-786-367-7012",
-    "contactType": "customer service",
-    "email": "coronadogoldjewelry@gmail.com"
-  },
-  "sameAs": [
-    "https://www.instagram.com/coronado.gold"
-  ]
+Add a 100–150 word introductory paragraph above the product grid on each category page:
+
+```
+"Our gold ring collection brings together handcrafted designs in 14k and 18k gold. Each piece is crafted with attention to detail, blending contemporary elegance with timeless craftsmanship. From delicate stackable bands to statement engagement styles, our rings are designed for everyday wear and special occasions alike. Explore the collection and find the piece that speaks to you."
+```
+
+---
+
+### M3. Update llms.txt with Full Product Catalog
+**Impact:** AI crawlers (ChatGPT, Perplexity, Claude) use this file for accurate brand citations.  
+**Effort:** 30 minutes  
+**File:** `public/llms.txt`
+
+Add:
+- Individual product URLs with names and prices
+- All necklace products (currently missing)
+- Pricing range information
+- Current collection names
+
+---
+
+### M4. Add Product Schema Fields
+**Impact:** More complete Product schema improves rich result eligibility.  
+**Effort:** 30 minutes  
+**File:** `src/pages/products/[product].astro`
+
+Add to the `productSchema` object:
+```ts
+"sku": product.handle,
+"offers": {
+  ...currentOffers,
+  "itemCondition": "https://schema.org/NewCondition",
+  "priceValidUntil": "2026-12-31",
+  "shippingDetails": {
+    "@type": "OfferShippingDetails",
+    "shippingRate": { "@type": "MonetaryAmount", "value": "0", "currency": "USD" },
+    "shippingDestination": { "@type": "DefinedRegion", "addressCountry": "US" }
+  }
 }
 ```
 
 ---
 
-### 13. Add BreadcrumbList Schema to Product/Category Pages
-**Effort:** 1-2 hours  
-**Impact:** Breadcrumb trails in search results
+### M5. Add H2/H3 Subheadings to Product Pages
+**Impact:** Structural hierarchy helps Google parse product content and enables featured snippet capture.  
+**Effort:** 1 hour  
+**File:** `src/pages/products/[product].astro`
+
+Add semantic headings to product page sections:
+- `<h2>Product Details</h2>`
+- `<h2>Materials & Craftsmanship</h2>`
+- `<h2>How to Care for Your Jewelry</h2>`
 
 ---
 
-### 14. Add Security Headers via Hostinger Configuration
-**Effort:** 1 hour (Hostinger hPanel)  
-**Impact:** User trust, Chrome security indicators
+### M6. Add H1 to Shipping Policy Page
+**Impact:** Missing H1 on `/shipping-policy/` — minor but easily fixed.  
+**Effort:** 5 minutes  
+**File:** `src/pages/shipping-policy.astro`
 
-Add via `.htaccess` or Hostinger's header management:
-- `Strict-Transport-Security: max-age=31536000; includeSubDomains`
-- `X-Content-Type-Options: nosniff`
-- `X-Frame-Options: SAMEORIGIN`
-- `Referrer-Policy: strict-origin-when-cross-origin`
+Add `<h1>Shipping Policy</h1>` to the page content.
 
 ---
 
-### 15. Optimize JavaScript Bundle
-**Effort:** 4-8 hours  
-**Impact:** INP and TTI improvements
+### M7. Consider Renaming Spanish Necklace URLs
+**Impact:** `/products/cadena-perlas-doradas` won't rank for English searches like "golden pearls necklace".  
+**Effort:** Medium — requires redirects from old URLs  
 
-- Move `CartSidebar` from `client:load` to `client:idle` (loads after page interactive)
-- Evaluate if GSAP can be replaced with CSS animations for simpler effects
-- Add `client:visible` to Swiper components (only hydrate when in viewport)
-- Consider removing or code-splitting Lenis on mobile
-
----
-
-### 16. Make About Section Content Crawlable
-**Effort:** 2-3 hours  
-**Impact:** Content indexation, E-E-A-T signals
-
-The about section uses JavaScript animation that hides text until the animation runs. Ensure the actual text content is in the static HTML (not just injected by JS), and the animation only affects visual presentation.
-
----
-
-### 17. Improve Homepage Title with Location/Keywords
-**Effort:** 15 minutes
-
-If the brand targets a specific region, add it: `"Coronado Gold — Fine Gold Jewelry | Miami, FL"`
+If renaming, implement 301 redirects from old handles to new English handles. Update Shopify product handles to English equivalents:
+- `cadena-perlas-doradas` → `golden-pearls-necklace`
+- `cadena-gota-lumiere` → `lumiere-drop-necklace`
+- `cadena-halo-brillante` → `brilliant-halo-necklace`
+- `cadena-corazon-lumiere` → `lumiere-heart-necklace`
 
 ---
 
 ## LOW — Backlog
 
-### 18. Create a Brand Story / About Page
-A dedicated `/about` page improves E-E-A-T and gives Google more context about the brand.
+### L1. Add Customer Reviews/Ratings
+**Impact:** Enables `aggregateRating` schema → star ratings in SERPs. Also major E-E-A-T signal.  
+**Effort:** Integration work (Shopify Reviews app or Judge.me)
 
-### 19. Add a Blog / Content Section
-Target informational keywords: "how to care for gold jewelry", "gold ring sizing guide", "best gold jewelry for gifts". Each article is an organic traffic entry point.
+### L2. Create Blog / Editorial Content
+**Impact:** Capture informational searches; build topical authority.  
+**Suggested topics:**
+- "14k vs 18k Gold: Which Should You Choose?"
+- "How to Care for Your Gold Jewelry"
+- "The Story Behind Coronado Gold"
+- "Gold Ring Buying Guide"
+- "Best Gold Jewelry Gifts for Her"
 
-### 20. Add Size Guide / Product FAQ
-On product pages, add a collapsible FAQ section. This enables `FAQPage` schema and captures "zero-click" featured snippet positions.
+### L3. Claim & Optimize Google Business Profile
+**Impact:** Local search visibility — "gold jewelry store near me", "jewelry store Hialeah FL"  
+**Action:** Verify GBP listing, add photos, hours, products, and gather reviews
 
-### 21. Add llms.txt for AI Search
-Create `public/llms.txt` to guide AI crawlers about the site's content and brand.
+### L4. Add "Related Products" Internal Linking
+**Impact:** Better crawl distribution; higher pages-per-session  
+**File:** `src/pages/products/[product].astro`  
+Add a "You might also like" section at the bottom of each product page
 
-### 22. Register in Google Search Console
-Submit sitemap after creating it. Monitor indexation status and search performance.
+### L5. Add HTML sitemap page
+**Impact:** User-discoverable site structure; light SEO signal  
+Create `/sitemap/` page listing all products and categories
 
-### 23. Set Up Google Analytics 4 Properly
-The homepage HTML shows `G-9Q6H0QETRF` in a generic "This Page Does Not Exist" error template — this appears to be a hosting-level 404 page. Ensure GA4 is properly installed in the actual site's `<head>`.
+### L6. Add HTML Cache-Control Headers via .htaccess
+**Impact:** Browser caching for repeat visitors  
+**File:** `public/.htaccess`  
+Add cache headers for HTML, CSS, JS, images
+
+### L7. Add `og:type` = `product` on Product Pages
+**Impact:** More specific social sharing metadata  
+Currently all pages use `og:type: website` — product pages should use `og:type: product` for Pinterest and Facebook product feeds
 
 ---
 
-## Summary Checklist
+## Priority Summary Table
 
-| # | Task | Priority | Effort | Done |
-|---|---|---|---|---|
-| 1 | Add robots.txt | Critical | 5 min | [ ] |
-| 2 | Add sitemap.xml | Critical | 30 min | [ ] |
-| 3 | Fix /category/earrings 404 | Critical | 30 min | [ ] |
-| 4 | Add meta descriptions | High | 1-2 hr | [ ] |
-| 5 | Add canonical tags | High | 30 min | [ ] |
-| 6 | Add H1 to all pages | High | 1 hr | [ ] |
-| 7 | Add OG + Twitter meta tags | High | 1 hr | [ ] |
-| 8 | Fix homepage title keywords | High | 10 min | [ ] |
-| 9 | Fix Facebook broken link | High | 5 min | [ ] |
-| 10 | Add Product schema (JSON-LD) | High | 2-3 hr | [ ] |
-| 11 | Fix hero image lazy loading | Medium | 15 min | [ ] |
-| 12 | Add Organization schema | Medium | 1 hr | [ ] |
-| 13 | Add Breadcrumb schema | Medium | 1-2 hr | [ ] |
-| 14 | Add security headers | Medium | 1 hr | [ ] |
-| 15 | Optimize JS bundle | Medium | 4-8 hr | [ ] |
-| 16 | Fix about section crawlability | Medium | 2-3 hr | [ ] |
-| 17 | Register Google Search Console | Low | 30 min | [ ] |
-| 18 | Create About page | Low | 4 hr | [ ] |
-| 19 | Add blog / content section | Low | Ongoing | [ ] |
-| 20 | Add llms.txt | Low | 30 min | [ ] |
+| ID | Issue | Priority | Effort | Impact |
+|----|-------|----------|--------|--------|
+| C1 | OG image 404 | Critical | 30min | High |
+| C2 | Earrings 404 nav link | Critical | 15min | High |
+| C3 | Necklace breadcrumb bug | Critical | 5min | High |
+| C4 | Add necklaces to sitemap | Critical | 10min | High |
+| H1 | Homepage meta desc too long | High | 5min | Medium |
+| H2 | Category page titles too short | High | 10min | High |
+| H3 | Add JewelryStore schema | High | 20min | Medium |
+| H4 | Hero image eager loading | High | 10min | Medium |
+| H5 | Fix duplicate H1 categories | High | 15min | Medium |
+| H6 | WebSite SearchAction schema | High | 10min | Low |
+| M1 | Expand product descriptions | Medium | 4hrs | Very High |
+| M2 | Add category intro text | Medium | 1hr | High |
+| M3 | Update llms.txt catalog | Medium | 30min | Medium |
+| M4 | Product schema fields | Medium | 30min | Medium |
+| M5 | H2/H3 on product pages | Medium | 1hr | Medium |
+| M6 | Add H1 to shipping policy | Medium | 5min | Low |
+| M7 | Rename Spanish necklace URLs | Medium | 2hrs | Medium |
+| L1 | Customer reviews | Low | High effort | Very High |
+| L2 | Blog content | Low | Ongoing | Very High |
+| L3 | Google Business Profile | Low | 1hr | High (local) |
+| L4 | Related products links | Low | 2hrs | Medium |
