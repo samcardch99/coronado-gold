@@ -172,16 +172,6 @@ import aboutImage2 from "../assets/about-2.jpg";
         });
     }
 
-    // Doble rAF: garantiza que Safari pinte el estado inicial (opacity:0 / translateY)
-    // antes de añadir la clase que dispara la transición.
-    function triggerParaAnimation(para: HTMLElement | null) {
-        requestAnimationFrame(() => {
-            requestAnimationFrame(() => {
-                para?.classList.add("lines-visible");
-            });
-        });
-    }
-
     async function init() {
         const section = document.getElementById("about");
         const para = document.getElementById("about-para");
@@ -193,26 +183,21 @@ import aboutImage2 from "../assets/about-2.jpg";
 
         splitTextIntoLines();
 
-        let animated = false;
-
-        function triggerReveal() {
-            if (animated) return;
-            animated = true;
-            section?.querySelectorAll(".about-reveal").forEach((el) => {
-                el.classList.add("is-visible");
-            });
-            triggerParaAnimation(para);
-        }
-
         const observer = new IntersectionObserver(
             (entries) => {
                 entries.forEach((entry) => {
                     if (entry.isIntersecting) {
-                        // Si hay un snap en curso, dejamos que snap:complete lo maneje
-                        // para que Safari reciba la señal cuando el scroll ya terminó.
-                        if (!document.body.dataset.snapping) {
-                            triggerReveal();
-                        }
+                        section
+                            ?.querySelectorAll(".about-reveal")
+                            .forEach((el) => {
+                                el.classList.add("is-visible");
+                            });
+
+                        // Pequeño delay para asegurar el render tras el split
+                        setTimeout(() => {
+                            para?.classList.add("lines-visible");
+                        }, 50);
+
                         observer.disconnect();
                     }
                 });
@@ -221,18 +206,6 @@ import aboutImage2 from "../assets/about-2.jpg";
         );
 
         if (section) observer.observe(section);
-
-        // Escuchar el evento que emite index.astro al finalizar el snap
-        window.addEventListener(
-            "snap:complete",
-            (e: Event) => {
-                const ev = e as CustomEvent<{ sectionId: string }>;
-                if (ev.detail.sectionId === "about") {
-                    triggerReveal();
-                }
-            },
-            { once: true },
-        );
     }
 
     // Compatibilidad con navegación de Astro y carga inicial

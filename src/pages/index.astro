@@ -67,34 +67,24 @@ import MostPopular from "../components/MostPopular.astro";
       if (index < 0 || index >= sections.length) return;
 
       isSnapping = true;
-      document.body.dataset.snapping = "true";
       wheelDelta = 0;
-
-      const target = sections[index];
-
-      function onSnapDone() {
-        releaseSnap();
-        delete document.body.dataset.snapping;
-        window.dispatchEvent(
-          new CustomEvent("snap:complete", { detail: { sectionId: target.id } })
-        );
-      }
 
       // Timeout de seguridad: si onComplete nunca llega (Lenis interrumpido),
       // liberamos el bloqueo igualmente para evitar quedar atascados.
-      safetyTimer = setTimeout(onSnapDone, SNAP_SAFETY_MS);
+      safetyTimer = setTimeout(releaseSnap, SNAP_SAFETY_MS);
 
+      const target = sections[index];
       const lenis = (window as any).__lenis;
 
       if (lenis) {
         lenis.scrollTo(target.offsetTop, {
           duration: SNAP_DURATION,
           easing: (t: number) => 1 - Math.pow(1 - t, 3),
-          onComplete: onSnapDone,
+          onComplete: releaseSnap,
         });
       } else {
         window.scrollTo({ top: target.offsetTop, behavior: "smooth" });
-        setTimeout(onSnapDone, SNAP_DURATION * 1000 + 200);
+        setTimeout(releaseSnap, SNAP_DURATION * 1000 + 200);
       }
     }
 
