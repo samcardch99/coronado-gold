@@ -150,6 +150,8 @@ import MostPopular from "../components/MostPopular.astro";
 
     function onKeyDown(e: KeyboardEvent) {
       if (isSideMenuOpen() || isSnapping) return;
+      const tag = (e.target as HTMLElement)?.tagName;
+      if (tag === "INPUT" || tag === "TEXTAREA" || (e.target as HTMLElement)?.isContentEditable) return;
       if (["ArrowDown", "PageDown", " "].includes(e.key)) {
         e.preventDefault();
         snapTo(getCurrentIndex() + 1);
