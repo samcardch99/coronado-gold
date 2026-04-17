@@ -85,6 +85,46 @@ const kilates = product.kilates?.value ?? null;
 const variantId = product.variants?.edges?.[0]?.node?.id ?? null;
 const quantityAvailable = product.variants?.edges?.[0]?.node?.quantityAvailable ?? null;
 
+// SEO
+const metaDescription = product.description
+    ? product.description.slice(0, 155).replace(/\s\S*$/, "") + (product.description.length > 155 ? "…" : "")
+    : `Shop the ${product.title} from Coronado Gold — handcrafted fine gold jewelry.`;
+
+// Detect category for breadcrumb
+const productHandle = (product.handle as string).toLowerCase();
+const breadcrumbCategory = productHandle.includes("necklace") || productHandle.includes("collar") || productHandle.includes("chain")
+    ? { name: "Necklaces", handle: "necklaces" }
+    : { name: "Rings", handle: "rings" };
+
+const productSchema = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": product.title,
+    "description": product.description || metaDescription,
+    "image": mainImage?.url ?? "",
+    "brand": { "@type": "Brand", "name": "Coronado Gold" },
+    "offers": {
+        "@type": "Offer",
+        "url": `https://goldcoronado.com/products/${product.handle}/`,
+        "priceCurrency": product.priceRange.minVariantPrice.currencyCode,
+        "price": parseFloat(product.priceRange.minVariantPrice.amount).toFixed(2),
+        "availability": (quantityAvailable ?? 1) > 0
+            ? "https://schema.org/InStock"
+            : "https://schema.org/OutOfStock",
+        "seller": { "@type": "Organization", "name": "Coronado Gold" }
+    }
+};
+
+const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://goldcoronado.com/" },
+        { "@type": "ListItem", "position": 2, "name": breadcrumbCategory.name, "item": `https://goldcoronado.com/category/${breadcrumbCategory.handle}/` },
+        { "@type": "ListItem", "position": 3, "name": product.title, "item": `https://goldcoronado.com/products/${product.handle}/` }
+    ]
+};
+
 // Citas hardcodeadas por categoría
 const CATEGORY_QUOTES = {
     rings: {
@@ -114,7 +154,11 @@ const categoryQuote =
             : CATEGORY_QUOTES.rings; // fallback: siempre muestra una cita
 ---
 
-<Layout title={product.title}>
+<Layout title={product.title} description={metaDescription} ogImage={mainImage?.url}>
+    <Fragment slot="head">
+        <script type="application/ld+json" set:html={JSON.stringify(productSchema)} />
+        <script type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />
+    </Fragment>
     <main class="bg-bone text-darkRed">
 
         <!-- ── SECTION 1: Product details ── -->

@@ -4,10 +4,53 @@ import Cover from "../components/Cover.astro";
 import About from "../components/About.astro";
 import Categories from "../components/Categories.astro";
 import MostPopular from "../components/MostPopular.astro";
+
+const organizationSchema = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "Coronado Gold",
+  "url": "https://goldcoronado.com",
+  "logo": "https://goldcoronado.com/logo.svg",
+  "contactPoint": {
+    "@type": "ContactPoint",
+    "telephone": "+17863677012",
+    "email": "coronadogoldjewelry@gmail.com",
+    "contactType": "customer service"
+  },
+  "sameAs": [
+    "https://www.instagram.com/coronado.gold",
+    "https://www.facebook.com/coronadogold"
+  ],
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "49 W 3rd St",
+    "addressLocality": "Hialeah",
+    "addressRegion": "FL",
+    "postalCode": "33010",
+    "addressCountry": "US"
+  }
+};
+
+const websiteSchema = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "Coronado Gold",
+  "url": "https://goldcoronado.com"
+};
 ---
 
-<Layout>
+<Layout
+  title="Fine Gold Jewelry — Rings & Necklaces"
+  description="Discover Coronado Gold's fine gold jewelry — handcrafted rings, necklaces and more. Premium 14k and 18k gold pieces crafted with precision and elegance. Shop online."
+>
+  <Fragment slot="head">
+    <script type="application/ld+json" set:html={JSON.stringify(organizationSchema)} />
+    <script type="application/ld+json" set:html={JSON.stringify(websiteSchema)} />
+  </Fragment>
+
   <main class="min-h-screen relative">
+    <!-- Visually hidden H1 for SEO: screen readers and Googlebot see it -->
+    <h1 class="sr-only">Coronado Gold — Fine Gold Jewelry | Handcrafted Rings & Necklaces</h1>
     <Cover />
     <About />
     <Categories />
