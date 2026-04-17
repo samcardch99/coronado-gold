@@ -5,29 +5,44 @@ const isHome = pathname === "/" || pathname === "/index.html";
 
 <div
     id="nav-container"
-    class="fixed bottom-4 md:bottom-10 left-1/2 -translate-x-1/2 transition-all duration-700 ease-in-out flex justify-between items-center h-12 md:h-24 w-[90%] md-custom:w-3/5 lg:w-3/5 xl:w-2/5 bg-[#a4a4a400] backdrop-blur-lg shadow-lg text-darkRed text-sm md:text-3xl rounded-full z-500 mx-auto overflow-visible"
+    class="fixed bottom-4 md:bottom-10 left-1/2 -translate-x-1/2 transition-all duration-700 ease-in-out flex justify-between items-center h-12 md:h-24 w-[90%] md-custom:w-3/5 lg:w-3/5 xl:w-2/5 bg-[#a4a4a400] backdrop-blur-lg text-darkRed text-sm md:text-3xl rounded-full z-500 mx-auto overflow-visible"
+    style={{
+        border: "1px solid rgba(255, 255, 255, 0.4)",
+        boxShadow: [
+            "0 15px 25px -5px rgba(0, 0, 0, 0.15)",
+            "0 8px 10px -6px rgba(0, 0, 0, 0.1)",
+            "inset 2px 2px 4px rgba(255, 255, 255, 0.7)",
+            "inset -2px -2px 5px rgba(0, 0, 0, 0.05)",
+        ].join(", "),
+    }}
 >
-    <div
-        class="absolute inset-0 rounded-full p-px pointer-events-none mask-[linear-gradient(to_bottom_left,black_40%,transparent_50%),linear-gradient(to_top_right,black_40%,transparent_50%)]"
-    >
-        <div class="absolute inset-0 rounded-full border border-white/60"></div>
-    </div>
+    <!-- noise overlay cristal -->
+    <span
+        class='pointer-events-none absolute inset-0 z-1 rounded-full opacity-[0.04] mix-blend-overlay [background-image:url(&apos;data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%"><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(%23noise)"/></svg>&apos;)]'
+    ></span>
 
     <div
         id="active-indicator"
         class={`absolute top-0 left-0 h-full w-1/2 md:w-1/3 transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] pointer-events-none z-0 scale-102 ${isHome ? "opacity-100" : "opacity-0"}`}
     >
         <div
-            class="w-full h-full bg-[#d9d9d90f] backdrop-blur-xl rounded-full shadow-[0px_10px_15px_-3px_rgba(0,0,0,0.2),inset_0_4px_6px_rgba(255,255,255,0.15)]"
+            class="w-full h-full bg-[#d9d9d90f] rounded-full relative overflow-hidden"
+            style={{
+                border: "1px solid rgba(255, 255, 255, 0.4)",
+                boxShadow: [
+                    "0 15px 25px -5px rgba(0, 0, 0, 0.15)",
+                    "0 8px 10px -6px rgba(0, 0, 0, 0.1)",
+                    "inset 2px 2px 4px rgba(255, 255, 255, 0.7)",
+                    "inset -2px -2px 5px rgba(0, 0, 0, 0.05)",
+                ].join(", "),
+                transition:
+                    "box-shadow 700ms ease-in-out, border 700ms ease-in-out",
+            }}
         >
-            <div
-                class="absolute inset-0 rounded-full p-px mask-[linear-gradient(to_right,black_0%,black_20%,transparent_95%)]"
-            >
-                <div
-                    class="absolute inset-0 rounded-full border border-white/75"
-                >
-                </div>
-            </div>
+            <!-- noise overlay cristal -->
+            <span
+                class='pointer-events-none absolute inset-0 z-1 rounded-full opacity-[0.04] mix-blend-overlay [background-image:url(&apos;data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%"><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(%23noise)"/></svg>&apos;)]'
+            ></span>
         </div>
     </div>
 
@@ -98,15 +113,47 @@ const isHome = pathname === "/" || pathname === "/index.html";
         indicator.style.transform = `translateX(${visualIndex * 98}%)`;
     }
 
-    function updateBarTheme(targetIndexStr) {
+    const indicatorInner = indicator?.querySelector(
+        "div",
+    ) as HTMLElement | null;
+
+    const shadowDefault = [
+        "0 15px 25px -5px rgba(0, 0, 0, 0.15)",
+        "0 8px 10px -6px rgba(0, 0, 0, 0.1)",
+        "inset 2px 2px 4px rgba(255, 255, 255, 0.7)",
+        "inset -2px -2px 5px rgba(0, 0, 0, 0.05)",
+    ].join(", ");
+    const shadowSubtle = [
+        "0 15px 25px -5px rgba(0, 0, 0, 0.15)",
+        "0 8px 10px -6px rgba(0, 0, 0, 0.1)",
+        "inset 2px 2px 4px rgba(255, 255, 255, 0.2)",
+        "inset -2px -2px 5px rgba(0, 0, 0, 0.05)",
+    ].join(", ");
+
+    function updateBarTheme(targetIndexStr: string) {
         if (!navContainer) return;
-        // '1' corresponds to the categories section 
-        if (targetIndexStr === "1") {
+        const isCategories = targetIndexStr === "1";
+
+        // Colores de fondo y texto
+        if (isCategories) {
             navContainer.classList.remove("bg-[#a4a4a400]", "text-darkRed");
-            navContainer.classList.add("bg-[#2D1B15]/60", "text-[#EBE6E0]"); // Oscurecimiento glass cálido y texto claro
+            navContainer.classList.add("bg-[#2D1B15]/60", "text-[#EBE6E0]");
         } else {
             navContainer.classList.remove("bg-[#2D1B15]/60", "text-[#EBE6E0]");
             navContainer.classList.add("bg-[#a4a4a400]", "text-darkRed");
+        }
+
+        // Relieve cristal: más sutil en categorías (fondo oscuro), normal en el resto
+        const shadow = isCategories ? shadowSubtle : shadowDefault;
+        const border = isCategories
+            ? "1px solid rgba(255, 255, 255, 0.2)"
+            : "1px solid rgba(255, 255, 255, 0.4)";
+
+        navContainer.style.boxShadow = shadow;
+        navContainer.style.border = border;
+        if (indicatorInner) {
+            indicatorInner.style.boxShadow = shadow;
+            indicatorInner.style.border = border;
         }
     }
 
@@ -166,9 +213,10 @@ const isHome = pathname === "/" || pathname === "/index.html";
             });
 
             if (visibleSections.size === 0) {
-                if (indicator && !isScrollingViaClick) {
-                    indicator.classList.remove("opacity-100");
-                    indicator.classList.add("opacity-0");
+                if (!isScrollingViaClick) {
+                    indicator?.classList.remove("opacity-100");
+                    indicator?.classList.add("opacity-0");
+                    updateBarTheme("0"); // ninguna sección tracked visible → tema claro
                 }
             } else {
                 if (isScrollingViaClick) return;

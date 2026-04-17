@@ -97,17 +97,17 @@ export default function Footer({ className }) {
         {/* ... Inputs de Name, Email y Phone se mantienen igual ... */}
         <div className="w-full">
           <input {...register("username")} placeholder="NAME" className="w-full bg-transparent border-b border-darkRed/80 placeholder:text-darkRed/80 pb-1 outline-none text-darkRed" />
-          {errors.username && <p className="text-xs text-red-900 mt-1 font-sans">{errors.username.message}</p>}
+          {errors.username && <p className="text-base md:text-3xl lg:text-lg text-red-900 mt-1 font-sans">{errors.username.message}</p>}
         </div>
 
         <div className="w-full">
           <input {...register("email")} type="email" placeholder="EMAIL" className="w-full bg-transparent border-b border-darkRed/80 placeholder:text-darkRed/80 pb-1 outline-none text-darkRed" />
-          {errors.email && <p className="text-xs text-red-900 mt-1 font-sans">{errors.email.message}</p>}
+          {errors.email && <p className="text-base md:text-3xl lg:text-lg text-red-900 mt-1 font-sans">{errors.email.message}</p>}
         </div>
 
         <div className="w-full">
           <input {...register("phone")} type="tel" placeholder="PHONE NUMBER" className="w-full bg-transparent border-b border-darkRed/80 placeholder:text-darkRed/80 pb-1 outline-none text-darkRed" />
-          {errors.phone && <p className="text-xs text-red-900 mt-1 font-sans">{errors.phone.message}</p>}
+          {errors.phone && <p className="text-base md:text-3xl lg:text-lg text-red-900 mt-1 font-sans">{errors.phone.message}</p>}
         </div>
 
         {/* COMMENTS CON AUTO-RESIZE */}
@@ -124,7 +124,7 @@ export default function Footer({ className }) {
             style={{ minHeight: "24px" }} // Evita saltos en la hidratación inicial
           />
           {errors.message && (
-            <p className="text-xs text-red-900 mt-1 font-sans">{errors.message.message}</p>
+            <p className="text-base md:text-3xl lg:text-lg text-red-900 mt-1 font-sans">{errors.message.message}</p>
           )}
         </div>
 

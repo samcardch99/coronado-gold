@@ -680,7 +680,7 @@ export default function CartSidebar() {
                 className='pointer-events-none absolute inset-0 z-1 opacity-[0.04] mix-blend-overlay rounded-full [background-image:url(&apos;data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%"><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(%23noise)"/></svg>&apos;)]'
               ></span>
 
-              <span className="relative z-10 font-light uppercase tracking-[0.15em] select-none text-base md:text-4xl lg:text-3xl">
+              <span className="relative z-10 font-light uppercase tracking-widest select-none text-base md:text-4xl lg:text-3xl">
                 {selectedCount === 0
                   ? "Select items to checkout"
                   : (loading ? "Preparing items..." : "Proceed to Payment")

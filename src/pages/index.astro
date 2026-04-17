@@ -56,6 +56,11 @@ import MostPopular from "../components/MostPopular.astro";
       return menu !== null && !menu.classList.contains("-translate-x-full");
     }
 
+    function isInFooterZone(): boolean {
+      const last = sections[sections.length - 1];
+      return window.scrollY > last.offsetTop + last.offsetHeight * 0.4;
+    }
+
     function releaseSnap() {
       isSnapping = false;
       if (safetyTimer) { clearTimeout(safetyTimer); safetyTimer = null; }
@@ -106,6 +111,18 @@ import MostPopular from "../components/MostPopular.astro";
       }
 
       const dir = e.deltaY > 0 ? 1 : -1;
+
+      // Desde el footer scrolleando hacia arriba → volver a la última sección
+      if (isInFooterZone()) {
+        if (dir === -1) {
+          e.preventDefault();
+          e.stopImmediatePropagation();
+          snapTo(sections.length - 1);
+        }
+        // dir === 1: dejar que Lenis scrollee más abajo en el footer
+        return;
+      }
+
       const nextIdx = getCurrentIndex() + dir;
 
       // Fuera del rango de secciones → liberar a Lenis (footer, o inicio)
@@ -141,8 +158,12 @@ import MostPopular from "../components/MostPopular.astro";
       if (Math.abs(diffY) < 50) return;
       if (Math.abs(diffX) > Math.abs(diffY)) return; // swipe horizontal → ignorar
       const dir = diffY > 0 ? 1 : -1;
+      if (isInFooterZone()) {
+        if (dir === -1) snapTo(sections.length - 1);
+        return;
+      }
       const nextIdx = getCurrentIndex() + dir;
-      if (nextIdx < 0 || nextIdx >= sections.length) return; // fuera de rango → libre
+      if (nextIdx < 0 || nextIdx >= sections.length) return;
       snapTo(nextIdx);
     }
 
@@ -154,9 +175,11 @@ import MostPopular from "../components/MostPopular.astro";
       if (tag === "INPUT" || tag === "TEXTAREA" || (e.target as HTMLElement)?.isContentEditable) return;
       if (["ArrowDown", "PageDown", " "].includes(e.key)) {
         e.preventDefault();
+        if (isInFooterZone()) return;
         snapTo(getCurrentIndex() + 1);
       } else if (["ArrowUp", "PageUp"].includes(e.key)) {
         e.preventDefault();
+        if (isInFooterZone()) { snapTo(sections.length - 1); return; }
         snapTo(getCurrentIndex() - 1);
       }
     }
