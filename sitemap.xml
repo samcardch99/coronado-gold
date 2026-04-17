@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+
+  <!-- Homepage -->
+  <url>
+    <loc>https://goldcoronado.com/</loc>
+    <lastmod>2026-04-17</lastmod>
+  </url>
+
+  <!-- Category Pages -->
+  <url>
+    <loc>https://goldcoronado.com/category/rings/</loc>
+    <lastmod>2026-04-17</lastmod>
+  </url>
+  <url>
+    <loc>https://goldcoronado.com/category/necklaces/</loc>
+    <lastmod>2026-04-17</lastmod>
+  </url>
+
+  <!-- Product Pages -->
+  <url>
+    <loc>https://goldcoronado.com/products/brilliant-woven-ring/</loc>
+    <lastmod>2026-04-17</lastmod>
+  </url>
+  <url>
+    <loc>https://goldcoronado.com/products/coeur-de-lumiere-ring/</loc>
+    <lastmod>2026-04-17</lastmod>
+  </url>
+  <url>
+    <loc>https://goldcoronado.com/products/coeur-de-lumiere-ring-sophisticated-version/</loc>
+    <lastmod>2026-04-17</lastmod>
+  </url>
+  <url>
+    <loc>https://goldcoronado.com/products/coeur-noire-de-lumiere-ring/</loc>
+    <lastmod>2026-04-17</lastmod>
+  </url>
+  <url>
+    <loc>https://goldcoronado.com/products/eclat-de-lumiere-ring/</loc>
+    <lastmod>2026-04-17</lastmod>
+  </url>
+  <url>
+    <loc>https://goldcoronado.com/products/feuille-de-lumiere-ring/</loc>
+    <lastmod>2026-04-17</lastmod>
+  </url>
+  <url>
+    <loc>https://goldcoronado.com/products/ghost-de-lumiere-ring/</loc>
+    <lastmod>2026-04-17</lastmod>
+  </url>
+  <url>
+    <loc>https://goldcoronado.com/products/infini-de-lumiere-ring/</loc>
+    <lastmod>2026-04-17</lastmod>
+  </url>
+  <url>
+    <loc>https://goldcoronado.com/products/intertwined-hearts-ring/</loc>
+    <lastmod>2026-04-17</lastmod>
+  </url>
+  <url>
+    <loc>https://goldcoronado.com/products/lumiere-knot-ring/</loc>
+    <lastmod>2026-04-17</lastmod>
+  </url>
+  <url>
+    <loc>https://goldcoronado.com/products/ruche-de-lumiere-ring/</loc>
+    <lastmod>2026-04-17</lastmod>
+  </url>
+  <url>
+    <loc>https://goldcoronado.com/products/trefle-de-lumiere-ring/</loc>
+    <lastmod>2026-04-17</lastmod>
+  </url>
+
+  <!-- Policy Pages -->
+  <url>
+    <loc>https://goldcoronado.com/privacy-policy/</loc>
+    <lastmod>2026-04-16</lastmod>
+  </url>
+  <url>
+    <loc>https://goldcoronado.com/shipping-policy/</loc>
+    <lastmod>2026-04-16</lastmod>
+  </url>
+  <url>
+    <loc>https://goldcoronado.com/terms-of-service/</loc>
+    <lastmod>2026-04-16</lastmod>
+  </url>
+
+</urlset>

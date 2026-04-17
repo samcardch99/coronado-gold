@@ -1,0 +1,31 @@
+# Coronado Gold
+
+> Fine gold jewelry brand based in Hialeah, Florida. Specializing in handcrafted 14k and 18k gold rings and necklaces.
+
+## About
+
+Coronado Gold is a fine jewelry brand offering handcrafted gold pieces — rings, necklaces, and more — made with precision and elegance. Located at 49 W 3rd St, Hialeah, FL 33010.
+
+## Products
+
+- Gold Rings: handcrafted 14k and 18k gold rings in a variety of styles
+- Gold Necklaces: elegant gold necklace designs for every occasion
+
+## Contact
+
+- Phone: (786) 367-7012
+- Email: coronadogoldjewelry@gmail.com
+- Instagram: https://www.instagram.com/coronado.gold
+
+## Pages
+
+- Homepage: https://goldcoronado.com/
+- Rings: https://goldcoronado.com/category/rings/
+- Necklaces: https://goldcoronado.com/category/necklaces/
+- Privacy Policy: https://goldcoronado.com/privacy-policy/
+- Shipping Policy: https://goldcoronado.com/shipping-policy/
+- Terms of Service: https://goldcoronado.com/terms-of-service/
+
+## Sitemap
+
+https://goldcoronado.com/sitemap.xml
