@@ -164,7 +164,7 @@ const categoryQuote =
     <main class="bg-bone text-darkRed">
 
         <!-- ── SECTION 1: Product details ── -->
-        <section class="snap-section h-screen overflow-y-auto w-full px-6 md:px-16 lg:px-20 pt-44 md:pt-48 lg:pt-56 pb-20 flex flex-col justify-center items-center">
+        <section class="h-screen overflow-y-auto w-full px-6 md:px-16 lg:px-20 pt-44 md:pt-48 lg:pt-56 pb-20 flex flex-col justify-center items-center">
 <div class="flex flex-col w-full md-custom:flex-row md-custom:justify-between lg:justify-center md-custom:items-start md-custom:gap-16 lg:gap-80">
             <!-- IMAGE COLUMN -->
             <div class="w-full md:w-1/2 md:max-w-2xl lg:max-w-3xl flex flex-col items-center">
@@ -304,7 +304,7 @@ const categoryQuote =
 
         <!-- ── SECTION 2: Full-bleed hover image with quote ── -->
         {hoverImage?.url && (
-            <section class="snap-section relative w-full bg-[#D4CBC8] h-screen flex items-end md:items-center justify-end overflow-hidden">
+            <section class="relative w-full bg-[#D4CBC8] h-screen flex items-end md:items-center justify-end overflow-hidden">
                 <!-- Background image -->
                 <Image
                     src={shopifyImg(hoverImage.url, 1920)}
@@ -332,93 +332,6 @@ const categoryQuote =
 
     </main>
 </Layout>
-
-<script>
-    let snapWheelListener: ((e: WheelEvent) => void) | null = null;
-
-    function initProductSnap() {
-        const lenis = (window as any).__lenis;
-        if (!lenis) {
-            setTimeout(initProductSnap, 80);
-            return;
-        }
-
-        const sections = Array.from(
-            document.querySelectorAll("section.snap-section")
-        ) as HTMLElement[];
-        if (sections.length === 0) return;
-
-        if (snapWheelListener) {
-            window.removeEventListener("wheel", snapWheelListener);
-        }
-
-        let currentIndex = 0;
-
-        const lastSection = sections[sections.length - 1];
-
-        // Devuelve true si el scroll está en la zona del footer (pasado el área de secciones)
-        function inFooterZone() {
-            return lenis.scroll > lastSection.offsetTop + lastSection.offsetHeight * 0.4;
-        }
-
-        // Actualiza currentIndex mientras el usuario scrollea libremente (sin lock)
-        lenis.on("scroll", ({ scroll }: { scroll: number }) => {
-            if (lenis.isLocked) return;
-            let idx = 0;
-            sections.forEach((s, i) => {
-                if (scroll >= s.offsetTop - window.innerHeight * 0.35) idx = i;
-            });
-            currentIndex = idx;
-        });
-
-        snapWheelListener = (e: WheelEvent) => {
-            if (lenis.isLocked) return;
-
-            const dir = e.deltaY > 0 ? 1 : -1;
-
-            // Desde el footer scrolleando hacia arriba → volver a la última sección
-            if (inFooterZone()) {
-                if (dir === -1) {
-                    currentIndex = sections.length - 1;
-                    lenis.scrollTo(sections[currentIndex], {
-                        duration: 1.0,
-                        lock: true,
-                        easing: (t: number) => 1 - Math.pow(1 - t, 3),
-                    });
-                }
-                // dir === 1 en footer: dejar que Lenis scrollee más abajo
-                return;
-            }
-
-            const nextIndex = currentIndex + dir;
-
-            // Última sección scrolleando hacia abajo → Lenis va al footer libremente
-            if (nextIndex >= sections.length) return;
-            // Primera sección scrolleando hacia arriba → nada que hacer
-            if (nextIndex < 0) return;
-
-            currentIndex = nextIndex;
-            lenis.scrollTo(sections[nextIndex], {
-                duration: 1.0,
-                lock: true,
-                easing: (t: number) => 1 - Math.pow(1 - t, 3),
-            });
-        };
-
-        window.addEventListener("wheel", snapWheelListener, { passive: false });
-    }
-
-    function destroyProductSnap() {
-        if (snapWheelListener) {
-            window.removeEventListener("wheel", snapWheelListener);
-            snapWheelListener = null;
-        }
-    }
-
-    initProductSnap();
-    document.addEventListener("astro:page-load", initProductSnap);
-    document.addEventListener("astro:before-swap", destroyProductSnap);
-</script>
 
 <script>
     // Fetches the first variant ID for a product handle via Storefront API
