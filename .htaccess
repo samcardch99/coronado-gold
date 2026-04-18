@@ -1,42 +1,24 @@
-# ─── Security Headers ───────────────────────────────────────────────────────
+# ── Sin caché — el cliente siempre ve la versión más reciente ─────────────────
+
 <IfModule mod_headers.c>
-    # Strict-Transport-Security: force HTTPS for 1 year, include subdomains
-    Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
-
-    # Prevent clickjacking
-    Header always set X-Frame-Options "SAMEORIGIN"
-
-    # Prevent MIME-type sniffing
-    Header always set X-Content-Type-Options "nosniff"
-
-    # Referrer Policy: send full URL to same origin, only origin to cross-origin
-    Header always set Referrer-Policy "strict-origin-when-cross-origin"
-
-    # Permissions Policy: restrict browser features
-    Header always set Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=(self)"
-
-    # Content-Security-Policy
-    Header always set Content-Security-Policy "upgrade-insecure-requests; default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.shopify.com https://www.emailjs.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://cdn.shopify.com; connect-src 'self' https://*.myshopify.com https://api.emailjs.com; frame-ancestors 'none';"
+    Header set Cache-Control "no-cache, no-store, must-revalidate"
+    Header set Pragma "no-cache"
+    Header set Expires 0
 </IfModule>
 
-# ─── Redirect trailing-slash consistency ────────────────────────────────────
-# Astro SSG already handles this, but add a safety net for direct server hits
+# ── Compresión Gzip (mantener rendimiento sin caché) ──────────────────────────
+
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/css application/javascript application/json image/svg+xml
+</IfModule>
+
+# ── Rewrites para Astro (rutas limpias) ───────────────────────────────────────
+
 <IfModule mod_rewrite.c>
     RewriteEngine On
+    RewriteBase /
 
-    # Force HTTPS
-    RewriteCond %{HTTPS} off
-    RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
-</IfModule>
-
-# ─── Cache control for static assets ────────────────────────────────────────
-<IfModule mod_expires.c>
-    ExpiresActive On
-    ExpiresByType image/webp "access plus 1 year"
-    ExpiresByType image/jpeg "access plus 1 year"
-    ExpiresByType image/png  "access plus 1 year"
-    ExpiresByType image/svg+xml "access plus 1 year"
-    ExpiresByType text/css   "access plus 1 month"
-    ExpiresByType application/javascript "access plus 1 month"
-    ExpiresByType application/json "access plus 0 seconds"
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^ index.html [L]
 </IfModule>
