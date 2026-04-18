@@ -10,17 +10,15 @@ import aboutImage2 from "../assets/about-2.jpg";
     style="min-height: 600px; height: 100vh; height: 100svh;"
 >
     <div
-        class="w-full flex flex-col gap-12 md:justify-between md:h-[70vh] lg:h-auto lg:gap-20 p-6 md:p-16 md:pt-32 lg:p-20 lg:pt-44"
+        class="w-full flex flex-col gap-12 md:gap-20 lg:gap-20 p-6 md:p-16 md:pt-32 lg:p-20 lg:pt-44"
     >
         <div
-            class="grid grid-rows-3 items-end justify-items-end w-full h-[40vw] max-h-[30vh] md:max-h-30vh] lg:max-h-max md-custom:h-[40vh] lg:h-[50vh] 2xl:h-[50vh] mt-12 gap-4 md:gap-8 lg:gap-12"
+            class="grid grid-rows-3 items-end justify-items-end w-full h-[40vw] max-h-[30vh] md:max-h-max md-custom:h-[40vh] lg:h-[50vh] 2xl-prev:h-[60vh] mt-12 gap-4 md:gap-8 lg:gap-12"
         >
             <!-- Row 1: The + image1 -->
-            <div
-                class="flex gap-4 md:gap-8 items-end justify-end w-full h-full min-h-0"
-            >
+            <div class="flex gap-4 md:gap-8 items-end justify-end w-full h-full min-h-0">
                 <h2
-                    class="about-reveal text-[clamp(1.5rem,5vw,2rem)] leading-none md-custom:text-[6vh] md:text-[4vh] lg:text-[8vh] 2xl:text-8xl text-darkRed"
+                    class="about-reveal text-[clamp(1.5rem,5vw,2rem)] leading-none md-custom:text-[6vh] lg:text-[8vh] text-darkRed"
                     style="--reveal-delay: 0ms"
                 >
                     The
@@ -34,11 +32,9 @@ import aboutImage2 from "../assets/about-2.jpg";
                 />
             </div>
             <!-- Row 2: Legacy + image2 -->
-            <div
-                class="flex gap-4 md:gap-8 items-center justify-end w-full h-full min-h-0"
-            >
+            <div class="flex gap-4 md:gap-8 items-center justify-end w-full h-full min-h-0">
                 <h2
-                    class="about-reveal text-[clamp(1.5rem,5vw,2rem)] leading-none md-custom:text-[6vh] md:text-[4vh] lg:text-[8vh] 2xl:text-8xl text-darkRed"
+                    class="about-reveal text-[clamp(1.5rem,5vw,2rem)] leading-none md-custom:text-[6vh] lg:text-[8vh] text-darkRed"
                     style="--reveal-delay: 300ms"
                 >
                     Legacy
@@ -52,11 +48,9 @@ import aboutImage2 from "../assets/about-2.jpg";
                 />
             </div>
             <!-- Row 3: of excellence -->
-            <div
-                class="flex gap-4 md:gap-8 items-start justify-end w-full h-full min-h-0"
-            >
+            <div class="flex gap-4 md:gap-8 items-start justify-end w-full h-full min-h-0">
                 <h2
-                    class="about-reveal text-[clamp(1.5rem,5vw,2rem)] leading-none md-custom:text-[6vh] md:text-[4vh] lg:text-[8vh] 2xl:text-8xl text-darkRed"
+                    class="about-reveal text-[clamp(1.5rem,5vw,2rem)] leading-none md-custom:text-[6vh] lg:text-[8vh] text-darkRed"
                     style="--reveal-delay: 600ms"
                 >
                     of excellence
@@ -66,7 +60,7 @@ import aboutImage2 from "../assets/about-2.jpg";
 
         <p
             id="about-para"
-            class="text-black text-sm md:text-4xl lg:text-3xl w-full md:w-3/5 xl:w-2/5 leading-[1.4]"
+            class="about-para text-black text-sm md:text-4xl lg:text-3xl w-full md:w-3/5 xl:w-2/5 leading-[1.4]"
         >
             Coronado Gold focuses on the curation and trade of high-purity gold
             jewelry. The proposition is straightforward: pieces with a
@@ -77,34 +71,6 @@ import aboutImage2 from "../assets/about-2.jpg";
 </section>
 
 <style is:global>
-    /* Estilos optimizados para Safari/iOS */
-    .line-mask {
-        display: block;
-        overflow: hidden;
-        /* El padding previene que Safari corte las descendentes (letras j, g, p) */
-        padding-bottom: 0.2em;
-        margin-bottom: -0.2em;
-    }
-
-    .line-content {
-        display: inline-block;
-        width: 100%;
-        opacity: 0;
-        transform: translateY(110%);
-        transition:
-            transform 0.8s cubic-bezier(0.22, 1, 0.36, 1),
-            opacity 0.8s linear;
-        /* Aceleración de hardware para suavidad en iPhone */
-        will-change: transform;
-        -webkit-font-smoothing: antialiased;
-    }
-
-    .lines-visible .line-content {
-        opacity: 1;
-        transform: translateY(0);
-        transition-delay: calc(600ms + (var(--line-index) * 120ms));
-    }
-
     .about-reveal {
         opacity: 0;
         transform: translateX(60px);
@@ -113,114 +79,132 @@ import aboutImage2 from "../assets/about-2.jpg";
             transform 1s cubic-bezier(0.22, 1, 0.36, 1);
         transition-delay: var(--reveal-delay, 0ms);
         will-change: transform, opacity;
+        -webkit-font-smoothing: antialiased;
     }
 
     .about-reveal.is-visible {
         opacity: 1;
         transform: translateX(0);
     }
+
+    .about-para {
+        opacity: 0;
+    }
+
+    .line-mask {
+        display: block;
+        overflow: hidden;
+        padding-bottom: 0.15em;
+        margin-bottom: -0.15em;
+    }
+
+    .line-content {
+        display: inline-block;
+        width: 100%;
+        opacity: 0;
+        transform: translateY(110%);
+        transition:
+            transform 0.75s cubic-bezier(0.22, 1, 0.36, 1),
+            opacity 0.75s linear;
+        will-change: transform;
+        -webkit-font-smoothing: antialiased;
+    }
+
+    .lines-visible .line-content {
+        opacity: 1;
+        transform: translateY(0);
+        transition-delay: calc(700ms + (var(--line-index) * 110ms));
+    }
 </style>
 
 <script>
-    function splitTextIntoLines() {
-        const para = document.getElementById("about-para");
-        if (!para) return;
+    // ── Split ─────────────────────────────────────────────────────────────────
 
-        const text = para.innerText;
-        const words = text.split(/\s+/);
+    function splitAndAnimate(para: HTMLElement) {
+        const original = (para as any).__originalText ?? para.innerText;
+        (para as any).__originalText = original;
+
+        const words = original.split(/\s+/).filter(Boolean);
         para.innerHTML = "";
+        para.style.opacity = "1";
 
         let lineCount = 0;
         let currentLine = document.createElement("span");
         currentLine.className = "line-mask";
-
         let innerSpan = document.createElement("span");
         innerSpan.className = "line-content";
         innerSpan.style.setProperty("--line-index", "0");
-
+        innerSpan.textContent = words[0] ?? "";
         currentLine.appendChild(innerSpan);
         para.appendChild(currentLine);
 
-        // Medir altura inicial
-        innerSpan.innerHTML = words[0];
-        let lastHeight = innerSpan.getBoundingClientRect().height;
+        let lastH = innerSpan.getBoundingClientRect().height;
 
-        words.forEach((word, index) => {
-            if (index === 0) return;
+        // Fallback si getBCR no está disponible aún (Safari extremo)
+        if (lastH === 0) {
+            para.innerHTML = original;
+            para.style.transition = "opacity 0.9s cubic-bezier(0.22,1,0.36,1) 700ms";
+            requestAnimationFrame(() => { para.style.opacity = "1"; });
+            return;
+        }
 
-            const previousHTML = innerSpan.innerHTML;
-            innerSpan.innerHTML += " " + word;
+        for (let i = 1; i < words.length; i++) {
+            const candidate = innerSpan.textContent + " " + words[i];
+            innerSpan.textContent = candidate;
+            const newH = innerSpan.getBoundingClientRect().height;
 
-            // getBoundingClientRect es crucial para Safari (subpíxeles)
-            const currentHeight = innerSpan.getBoundingClientRect().height;
-
-            // Margen de tolerancia de 5px para detectar salto de línea real
-            if (currentHeight > lastHeight + 5) {
-                innerSpan.innerHTML = previousHTML;
-
+            if (newH > lastH + 3) {
+                innerSpan.textContent = candidate.slice(0, -(words[i].length + 1));
                 lineCount++;
                 currentLine = document.createElement("span");
                 currentLine.className = "line-mask";
-
                 innerSpan = document.createElement("span");
                 innerSpan.className = "line-content";
-                innerSpan.style.setProperty(
-                    "--line-index",
-                    lineCount.toString(),
-                );
-                innerSpan.innerHTML = word;
-
+                innerSpan.style.setProperty("--line-index", String(lineCount));
+                innerSpan.textContent = words[i];
                 currentLine.appendChild(innerSpan);
                 para.appendChild(currentLine);
-
-                lastHeight = innerSpan.getBoundingClientRect().height;
+                lastH = innerSpan.getBoundingClientRect().height;
             }
+        }
+
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                para.classList.add("lines-visible");
+            });
         });
     }
 
-    async function init() {
+    // ── Init ──────────────────────────────────────────────────────────────────
+
+    function init() {
         const section = document.getElementById("about");
-        const para = document.getElementById("about-para");
+        const para = document.getElementById("about-para") as HTMLElement | null;
+        if (!section || !para) return;
 
-        // Esperar a que las tipografías carguen para que las medidas sean exactas
-        if ("fonts" in document) {
-            await document.fonts.ready;
-        }
-
-        splitTextIntoLines();
+        // Ya animado en esta sesión de página — no repetir
+        if (section.dataset.aboutDone === "1") return;
 
         const observer = new IntersectionObserver(
             (entries) => {
-                entries.forEach((entry) => {
-                    if (entry.isIntersecting) {
-                        section
-                            ?.querySelectorAll(".about-reveal")
-                            .forEach((el) => {
-                                el.classList.add("is-visible");
-                            });
+                if (!entries[0].isIntersecting) return;
+                observer.disconnect();
+                section.dataset.aboutDone = "1";
 
-                        // Pequeño delay para asegurar el render tras el split
-                        setTimeout(() => {
-                            para?.classList.add("lines-visible");
-                        }, 50);
+                // 1. Headings e imágenes
+                section.querySelectorAll(".about-reveal").forEach((el) =>
+                    el.classList.add("is-visible")
+                );
 
-                        observer.disconnect();
-                    }
-                });
+                // 2. Split párrafo en rAF siguiente (no interrumpe transiciones de headings)
+                requestAnimationFrame(() => splitAndAnimate(para!));
             },
             { threshold: 0.05 },
         );
 
-        if (section) observer.observe(section);
+        observer.observe(section);
     }
 
-    // Compatibilidad con navegación de Astro y carga inicial
     init();
     document.addEventListener("astro:page-load", init);
-
-    let resizeTimer: any;
-    window.addEventListener("resize", () => {
-        clearTimeout(resizeTimer);
-        resizeTimer = setTimeout(init, 300);
-    });
 </script>
