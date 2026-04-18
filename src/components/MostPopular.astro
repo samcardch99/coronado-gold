@@ -93,52 +93,97 @@ const products = json.data?.collection?.products?.edges || [];
             Most Popular
         </h2>
 
+        <!-- Flechas de navegación crystal -->
         <div
-            class="swiper swiper-popular w-full md-custom:w-[90%] md:w-4/5 lg:w-4/5"
+            class="relative w-[90%] md-custom:w-[90%] md:w-4/5 lg:w-4/5 flex items-center justify-center px-6 md:px-16 lg:px-20"
         >
-            <div class="swiper-wrapper flex items-center">
-                {
-                    products.map(({ node: product }) => (
-                        <div class="scale-60 swiper-slide flex items-center justify-center aspect-square ">
-                            <a
-                                href={`/products/${product.handle}`}
-                                class="w-full relative group h-full rounded-full flex items-center justify-center transition-all duration-700 image-container cursor-pointer"
-                            >
-                                {product.hoverImage?.reference?.image?.url && (
+            <!-- Prev -->
+            <button
+                id="popular-prev"
+                aria-label="Previous"
+                class="crystal-arrow absolute left-0 z-30 flex items-center justify-center rounded-full"
+            >
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                >
+                    <polyline points="15 18 9 12 15 6"></polyline>
+                </svg>
+            </button>
+
+            <div class="swiper swiper-popular w-full">
+                <div class="swiper-wrapper flex items-center">
+                    {
+                        products.map(({ node: product }) => (
+                            <div class="scale-60 swiper-slide flex items-center justify-center aspect-square ">
+                                <a
+                                    href={`/products/${product.handle}`}
+                                    class="w-full relative group h-full rounded-full flex items-center justify-center transition-all duration-700 image-container cursor-pointer"
+                                >
+                                    {product.hoverImage?.reference?.image
+                                        ?.url && (
+                                        <Image
+                                            src={shopifyImg(
+                                                product.hoverImage.reference
+                                                    .image.url,
+                                                800,
+                                            )}
+                                            alt={
+                                                product.hoverImage.reference
+                                                    .image.altText ||
+                                                product.title
+                                            }
+                                            width={800}
+                                            inferSize
+                                            class="absolute inset-0 w-full aspect-square h-full object-cover object-center opacity-0 group-hover:opacity-100 transition-opacity duration-500 ease-in-out z-10"
+                                        />
+                                    )}
                                     <Image
                                         src={shopifyImg(
-                                            product.hoverImage.reference.image
-                                                .url,
+                                            product.images.edges[0]?.node.url,
                                             800,
                                         )}
                                         alt={
-                                            product.hoverImage.reference.image
+                                            product.images.edges[0]?.node
                                                 .altText || product.title
                                         }
                                         width={800}
                                         inferSize
-                                        class="absolute inset-0 w-full aspect-square h-full object-cover object-center opacity-0 group-hover:opacity-100 transition-opacity duration-500 ease-in-out z-10"
+                                        class="relative w-full aspect-square h-full object-cover object-center group-hover:opacity-0 transition-opacity duration-500 ease-in-out"
                                     />
-                                )}
-                                <Image
-                                    src={shopifyImg(
-                                        product.images.edges[0]?.node.url,
-                                        800,
-                                    )}
-                                    alt={
-                                        product.images.edges[0]?.node.altText ||
-                                        product.title
-                                    }
-                                    width={800}
-                                    inferSize
-                                    class="relative w-full aspect-square h-full object-cover object-center group-hover:opacity-0 transition-opacity duration-500 ease-in-out"
-                                />
-                            </a>
-                        </div>
-                    ))
-                }
+                                </a>
+                            </div>
+                        ))
+                    }
+                </div>
             </div>
-        </div>
+
+            <!-- Next -->
+            <button
+                id="popular-next"
+                aria-label="Next"
+                class="crystal-arrow absolute right-0 z-30 flex items-center justify-center rounded-full"
+            >
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                >
+                    <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
+            </button>
+        </div><!-- end carousel wrapper -->
 
         <div class="text-center z-10 px-8 md:px-16 lg:px-20">
             <h3
@@ -182,6 +227,79 @@ const products = json.data?.collection?.products?.edges || [];
 </section>
 
 <style>
+    /* ── Crystal arrows ────────────────────────────────────────────────────── */
+    .crystal-arrow {
+        width: 2.8rem;
+        height: 2.8rem;
+        cursor: pointer;
+        color: #79180b;
+        background: linear-gradient(145deg, #e6e1de 0%, #dbd4d0 100%);
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        box-shadow:
+            0 15px 25px -5px rgba(0, 0, 0, 0.12),
+            0 8px 10px -6px rgba(0, 0, 0, 0.1),
+            inset 2px 2px 4px rgba(255, 255, 255, 0.7),
+            inset -2px -2px 5px rgba(0, 0, 0, 0.05);
+        transform: scale(1);
+        transition:
+            transform 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+            box-shadow 0.25s ease;
+    }
+
+    .crystal-arrow:hover {
+        transform: scale(1.1);
+        box-shadow:
+            0 20px 30px -5px rgba(0, 0, 0, 0.16),
+            0 10px 14px -6px rgba(0, 0, 0, 0.12),
+            inset 2px 2px 5px rgba(255, 255, 255, 0.8),
+            inset -2px -2px 6px rgba(0, 0, 0, 0.06);
+    }
+
+    .crystal-arrow:active {
+        transform: scale(0.95);
+    }
+
+    .crystal-arrow svg {
+        width: 1.2rem;
+        height: 1.2rem;
+    }
+
+    @media (min-width: 768px) {
+        .crystal-arrow {
+            width: 6.5rem;
+            height: 6.5rem;
+            left: auto;
+            right: auto;
+        }
+        #popular-prev {
+            left: -1.25rem;
+        }
+        #popular-next {
+            right: -1.25rem;
+        }
+        .crystal-arrow svg {
+            width: 2.8rem;
+            height: 2.8rem;
+        }
+    }
+
+    @media (min-width: 1024px) {
+        .crystal-arrow {
+            width: 5.5rem;
+            height: 5.5rem;
+        }
+        #popular-prev {
+            left: -1.75rem;
+        }
+        #popular-next {
+            right: -1.75rem;
+        }
+        .crystal-arrow svg {
+            width: 2.6rem;
+            height: 2.6rem;
+        }
+    }
+
     /* Contenedor de paginación */
     .swiper-pagination-popular {
         display: flex;
@@ -322,9 +440,9 @@ const products = json.data?.collection?.products?.edges || [];
             longSwipes: false,
             grabCursor: true,
             centeredSlides: true,
-            slidesPerView: 2, // 'auto' suele funcionar mejor con coverflow
+            slidesPerView: 1.9, // 'auto' suele funcionar mejor con coverflow
             loop: true,
-            spaceBetween: -120,
+            spaceBetween: -150,
             autoplay: {
                 delay: 3000,
                 disableOnInteraction: false,
@@ -339,7 +457,8 @@ const products = json.data?.collection?.products?.edges || [];
             },
             breakpoints: {
                 768: {
-                    slidesPerView: 4, // Ajustado para que el efecto se aprecie mejor
+                    slidesPerView: 4,
+                    spaceBetween: -120,
                 },
             },
 
@@ -380,6 +499,28 @@ const products = json.data?.collection?.products?.edges || [];
         });
     }
 
+    // ── Arrow navigation ──────────────────────────────────────────────────────
+    function initArrows() {
+        const prev = document.getElementById("popular-prev");
+        const next = document.getElementById("popular-next");
+        if (!prev || !next) return;
+
+        // Clonar para eliminar listeners anteriores (view transitions)
+        const freshPrev = prev.cloneNode(true) as HTMLElement;
+        const freshNext = next.cloneNode(true) as HTMLElement;
+        prev.parentNode?.replaceChild(freshPrev, prev);
+        next.parentNode?.replaceChild(freshNext, next);
+
+        freshPrev.addEventListener("click", () => popularSwiper?.slidePrev());
+        freshNext.addEventListener("click", () => popularSwiper?.slideNext());
+    }
+
     initCarousel();
-    document.addEventListener("astro:page-load", initCarousel);
+    document.addEventListener("astro:page-load", () => {
+        initCarousel();
+        initArrows();
+    });
+
+    // Inicializar flechas después del carrusel en carga inicial
+    initArrows();
 </script>
