@@ -1,5 +1,18 @@
 @import "tailwindcss";
 
+/* ─── Viewport fijo en iOS (evita saltos con barra del browser) ─────────────── */
+:root {
+    --app-height: 100svh; /* fallback hasta que JS fije el valor real */
+}
+
+/* h-screen usa --app-height en lugar de 100vh */
+.h-screen {
+    height: var(--app-height) !important;
+}
+.min-h-screen {
+    min-height: var(--app-height) !important;
+}
+
 @font-face {
     font-family: "Montage Serif";
     src: url("../assets/fonts/Montage-Serif-Font.woff2") format("woff2");

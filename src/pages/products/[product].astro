@@ -164,7 +164,7 @@ const categoryQuote =
     <main class="bg-bone text-darkRed">
 
         <!-- ── SECTION 1: Product details ── -->
-        <section class="min-h-screen w-full px-6 md:px-16 lg:px-20 pt-44 md:pt-48 lg:pt-56 pb-20 flex flex-col justify-center items-center" style="min-height: 100svh;">
+        <section class="min-h-screen w-full px-6 md:px-16 lg:px-20 pt-44 md:pt-48 lg:pt-56 pb-20 flex flex-col justify-center items-center" style="min-height: var(--app-height, 100svh);">
 <div class="flex flex-col w-full md-custom:flex-row md-custom:justify-between lg:justify-center md-custom:items-start md-custom:gap-16 lg:gap-80">
             <!-- IMAGE COLUMN -->
             <div class="w-full md:w-1/2 md:max-w-2xl lg:max-w-3xl flex flex-col items-center">
@@ -304,7 +304,7 @@ const categoryQuote =
 
         <!-- ── SECTION 2: Full-bleed hover image with quote ── -->
         {hoverImage?.url && (
-            <section class="relative w-full bg-[#D4CBC8] min-h-screen flex items-end md:items-center justify-end overflow-hidden" style="min-height: 100svh;">
+            <section class="relative w-full bg-[#D4CBC8] min-h-screen flex items-end md:items-center justify-end overflow-hidden" style="min-height: var(--app-height, 100svh);">
                 <!-- Background image -->
                 <Image
                     src={shopifyImg(hoverImage.url, 1920)}

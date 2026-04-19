@@ -29,9 +29,10 @@ const storefrontToken = import.meta.env.STOREFRONT_ACCESS_TOKEN;
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="en" translate="no">
 	<head>
 		<meta charset="UTF-8" lang="en" translate="no" />
+		<meta name="google" content="notranslate" />
 		<meta name="viewport" content="width=device-width" />
 		<link rel="icon" type="image/svg+xml" href="/logo.svg" />
 		<link rel="icon" href="/favicon.ico" />
@@ -84,7 +85,6 @@ const storefrontToken = import.meta.env.STOREFRONT_ACCESS_TOKEN;
 			import "lenis/dist/lenis.css";
 
 			function createLenis() {
-				// Destruir instancia anterior si existe
 				const prev = (window as any).__lenis;
 				if (prev) {
 					prev.destroy();
@@ -95,13 +95,27 @@ const storefrontToken = import.meta.env.STOREFRONT_ACCESS_TOKEN;
 				(window as any).__lenis = lenis;
 			}
 
-			// Inicialización en primera carga
 			createLenis();
 
-			// Back navigation: navegación estándar del navegador
 			(window as any).__cgBack = () => {
 				history.back();
 			};
+		</script>
+
+		<!-- Fijar altura real del viewport — evita saltos al mostrar/ocultar barra iOS -->
+		<script is:inline>
+			function setVh() {
+				document.documentElement.style.setProperty(
+					'--app-height',
+					window.innerHeight + 'px'
+				);
+			}
+			// Fijar una sola vez al cargar
+			setVh();
+			// Actualizar solo al rotar pantalla (no en scroll)
+			window.addEventListener('orientationchange', function () {
+				setTimeout(setVh, 100);
+			});
 		</script>
 	</body>
 </html>
