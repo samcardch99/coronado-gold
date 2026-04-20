@@ -127,9 +127,9 @@ const categoryData = images.map((img) => ({
         class="absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 w-full p-6 md:p-10 lg:p-20 z-10 flex justify-between items-end text-white"
     >
         <CrystalButtonDark
-            id="open-side-menu"
-            text="See All Categories"
-            href="#"
+            id="rings-link"
+            text="Rings"
+            href="/category/rings"
             className="w-fit"
         />
         <div class="flex flex-col gap-10 items-end">
@@ -140,9 +140,9 @@ const categoryData = images.map((img) => ({
                 {images[0].alt}
             </h2>
             <CrystalButtonDark
-                id="dynamic-link"
-                text="See All"
-                href={`/category/${images[0].handle}`}
+                id="necklaces-link"
+                text="Necklaces"
+                href="/category/necklaces"
                 className=" "
             />
         </div>
@@ -210,7 +210,7 @@ const categoryData = images.map((img) => ({
         const swiperEl = document.querySelector<HTMLElement>(".swiper-categories");
         const titleEl = document.querySelector("#dynamic-title");
         const linkEl = document.querySelector(
-            "#dynamic-link",
+            "#necklaces-link",
         ) as HTMLAnchorElement;
 
         if (!swiperEl || !section || !titleEl) return;
@@ -227,20 +227,12 @@ const categoryData = images.map((img) => ({
             swiperEl.innerHTML = originalCategoriesHTML;
         }
 
-        // Side Menu Logic
-        const openBtn = document.querySelector("#open-side-menu");
+        // Side Menu Logic (kept for potential future use)
         const closeBtn = document.querySelector("#close-side-menu");
         const sideMenu = document.querySelector("#categories-side-menu");
         const backdrop = document.querySelector("#side-menu-backdrop");
 
-        if (openBtn && closeBtn && sideMenu && backdrop) {
-            openBtn.addEventListener("click", (e) => {
-                e.preventDefault();
-                sideMenu.classList.remove("-translate-x-full");
-                backdrop.classList.remove("opacity-0", "pointer-events-none");
-                document.dispatchEvent(new CustomEvent("sideMenuOpen"));
-            });
-
+        if (closeBtn && sideMenu && backdrop) {
             const closeMenu = () => {
                 sideMenu.classList.add("-translate-x-full");
                 backdrop.classList.add("opacity-0", "pointer-events-none");
@@ -275,9 +267,6 @@ const categoryData = images.map((img) => ({
                     setTimeout(() => {
                         const currentCat = categories[categoriesSwiper.realIndex];
                         titleEl.textContent = currentCat.alt;
-                        if (linkEl) {
-                            linkEl.href = `/category/${currentCat.handle}`;
-                        }
                         titleEl.classList.remove("!opacity-0");
                     }, 500);
                 },
