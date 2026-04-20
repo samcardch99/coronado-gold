@@ -44,7 +44,14 @@ export async function getStaticPaths() {
                 variants(first: 1) {
                   edges { node { id quantityAvailable } }
                 }
-                hoverImage: metafield(namespace: "custom", key: "hover_image") {
+                interiorImage: metafield(namespace: "custom", key: "interior_image") {
+                  reference {
+                    ... on MediaImage {
+                      image { url altText }
+                    }
+                  }
+                }
+                interiorImageMobile: metafield(namespace: "custom", key: "interior_image_mobile") {
                   reference {
                     ... on MediaImage {
                       image { url altText }
@@ -74,7 +81,8 @@ export async function getStaticPaths() {
 const { product } = Astro.props;
 
 const mainImage = product.images.edges[0]?.node;
-const hoverImage = product.hoverImage?.reference?.image;
+const interiorImage = product.interiorImage?.reference?.image;
+const interiorImageMobile = product.interiorImageMobile?.reference?.image;
 
 const price = new Intl.NumberFormat("en-US", {
     style: "currency",
@@ -303,15 +311,23 @@ const categoryQuote =
         </div>
 
         <!-- ── SECTION 2: Full-bleed hover image with quote ── -->
-        {hoverImage?.url && (
-            <section class="relative w-full bg-[#D4CBC8] min-h-screen flex items-end md:items-center justify-end overflow-hidden" style="min-height: var(--app-height, 100svh);">
-                <!-- Background image -->
+        {interiorImage?.url && (
+            <section class="relative w-full  bg-[#D4CBC8] min-h-screen flex items-end md:items-center justify-end overflow-hidden" style="min-height: var(--app-height, 100svh);">
+                <!-- Background image Desktop (hidden on mobile) -->
                 <Image
-                    src={shopifyImg(hoverImage.url, 1920)}
-                    alt={hoverImage.altText || product.title}
+                    src={shopifyImg(interiorImage.url, 1920)}
+                    alt={interiorImage.altText || product.title}
                     width={1920}
                     inferSize
-                    class=" absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full aspect-square object-contain object-center"
+                    class="absolute inset-0 w-full h-full object-cover object-center hidden md:block"
+                />
+                <!-- Background image Mobile (fallback to desktop if no mobile image) -->
+                <Image
+                    src={shopifyImg((interiorImageMobile?.url ?? interiorImage.url), 800)}
+                    alt={(interiorImageMobile?.altText ?? interiorImage.altText) || product.title}
+                    width={800}
+                    inferSize
+                    class="absolute inset-0 w-full h-full object-cover object-center block md:hidden"
                 />
 
                 <!-- Quote overlay -->
