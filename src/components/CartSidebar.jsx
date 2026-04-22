@@ -139,8 +139,8 @@ function CartItem({ line, onUpdate, onRemove, busy, quantityAvailable, selected,
             {product.title}
           </p>
           {variantLabel && (
-            <p className="text-xs tracking-wider text-darkRed/60 mt-0.5 uppercase">
-              {variantLabel}
+            <p className="text-xs md:text-xl lg:text-xl tracking-wider text-darkRed/45 mt-0.5 uppercase">
+              Size: {variantLabel}
             </p>
           )}
           {kilates && (

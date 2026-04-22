@@ -41,8 +41,17 @@ export async function getStaticPaths() {
                 images(first: 1) {
                   edges { node { url altText } }
                 }
-                variants(first: 1) {
-                  edges { node { id quantityAvailable } }
+                options { name }
+                variants(first: 100) {
+                  edges {
+                    node {
+                      id
+                      title
+                      availableForSale
+                      quantityAvailable
+                      price { amount currencyCode }
+                    }
+                  }
                 }
                 interiorImage: metafield(namespace: "custom", key: "interior_image") {
                   reference {
@@ -90,8 +99,18 @@ const price = new Intl.NumberFormat("en-US", {
 }).format(parseFloat(product.priceRange.minVariantPrice.amount));
 
 const kilates = product.kilates?.value ?? null;
-const variantId = product.variants?.edges?.[0]?.node?.id ?? null;
-const quantityAvailable = product.variants?.edges?.[0]?.node?.quantityAvailable ?? null;
+
+// Variants / sizes
+const rawVariants = (product.variants?.edges ?? []).map((e: any) => e.node);
+const optionName = product.options?.[0]?.name ?? null;
+const hasRealSizes = rawVariants.length > 0 &&
+    !(rawVariants.length === 1 && rawVariants[0].title === "Default Title");
+const sizeVariants = hasRealSizes ? rawVariants : [];
+// For products without sizes, the single default variant is used directly
+const variantId = !hasRealSizes ? (rawVariants[0]?.id ?? null) : null;
+// Use real quantityAvailable from Shopify (requires unauthenticated_read_product_inventory scope).
+// If null (scope not enabled), the pre-check is skipped and Shopify enforces server-side.
+const quantityAvailable = !hasRealSizes ? (rawVariants[0]?.quantityAvailable ?? null) : null;
 
 // SEO
 const metaDescription = product.description
@@ -102,6 +121,8 @@ const metaDescription = product.description
 const productHandle = (product.handle as string).toLowerCase();
 const breadcrumbCategory = productHandle.includes("necklace") || productHandle.includes("collar") || productHandle.includes("chain") || productHandle.includes("cadena")
     ? { name: "Necklaces", handle: "necklaces" }
+    : productHandle.includes("earring") || productHandle.includes("arete") || productHandle.includes("pendiente") || productHandle.includes("stud")
+    ? { name: "Earrings", handle: "earrings" }
     : { name: "Rings", handle: "rings" };
 
 const productSchema = {
@@ -220,6 +241,7 @@ const categoryQuote =
     data-image-url={mainImage?.url ?? ""}
     data-image-alt={mainImage?.altText ?? ""}
     data-quantity-available={quantityAvailable ?? ""}
+    data-has-sizes={hasRealSizes ? "true" : "false"}
     class={`
     text-darkRed! bg-linear-to-br! from-darkRed/25! via-darkRed/12! to-darkRed/8! 
         relative overflow-hidden cursor-pointer font-medium rounded-full inline-flex items-center justify-center 
@@ -263,7 +285,7 @@ const categoryQuote =
             </div>
 
             <!-- INFO COLUMN -->
-            <div class="w-full md:w-1/2 mt-12 md-custom:mt-0 flex flex-col justify-center">
+            <div class="w-full md:w-1/2 mt-12 md-custom:mt-0 flex flex-col justify-center gap-2 md:gap-6 lg:gap-4">
 
                
                 <!-- Title -->
@@ -281,6 +303,37 @@ const categoryQuote =
                     </p>
                 )}
 
+                <!-- Size Selector -->
+                {sizeVariants.length > 0 && (
+                    <div id="size-selector" class="mt-6">
+                        <p class="text-xs md-custom:text-[clamp(1rem, 0.5rem+0.1vw, 1.125rem)] md:text-xl lg:text-3xl tracking-[0.2em] text-darkRed/50 uppercase mb-3">
+                           Available Sizes
+                        </p>
+                        <div class="flex flex-wrap gap-2 md:gap-4">
+                            {sizeVariants.map((v: any) => (
+                                <button
+                                    type="button"
+                                    data-variant-id={v.id}
+                                    data-size-label={v.title}
+                                    data-available={v.availableForSale ? "true" : "false"}
+                                    data-qty={v.quantityAvailable != null ? String(v.quantityAvailable) : ""}
+                                    class={`size-btn px-4 py-2 md:px-8 md:py-4 lg:px-6 lg:py-3 text-sm md-custom:text-[clamp(0.875rem, 0.438rem+0.1vw, 0.938rem)] md:text-2xl lg:text-2xl tracking-[0.15em] rounded-lg border transition-all duration-200 select-none
+                                        ${v.availableForSale
+                                            ? "border-darkRed/25 text-darkRed hover:border-darkRed/60 hover:bg-darkRed/5 cursor-pointer"
+                                            : "border-darkRed/10 text-darkRed/30 cursor-not-allowed line-through"
+                                        }`}
+                                >
+                                    {v.title}
+                                </button>
+                            ))}
+                        </div>
+                       
+                        <p id="size-error" class="text-xs md:text-xl lg:text-xl tracking-[0.15em] text-red-500 mt-3 uppercase hidden">
+                            ⚠ Please select a size before adding to cart
+                        </p>
+                    </div>
+                )}
+
                 <!-- Specs table -->
                 {kilates && (
                     <div class="mt-6">
@@ -293,7 +346,7 @@ const categoryQuote =
                         <hr class="border-darkRed/25" />
                         <!-- Row: Kilates -->
                         <div class="grid grid-cols-2 gap-x-8 py-3">
-                            <p class="text-xs md-custom:text-[clamp(1rem, 0.5rem+0.1vw, 1.125rem)] md:text-xl lg:text-3xl tracking-[0.15em] ">Kilates</p>
+                            <p class="text-xs md-custom:text-[clamp(1rem, 0.5rem+0.1vw, 1.125rem)] md:text-xl lg:text-3xl tracking-[0.15em] ">K</p>
                             <p class="text-xs md-custom:text-[clamp(1rem, 0.5rem+0.1vw, 1.125rem)] md:text-xl lg:text-3xl tracking-[0.15em] ">{kilates}</p>
                         </div>
                     </div>
@@ -382,6 +435,52 @@ const categoryQuote =
         }
     }
 
+    // ─── Size selector ────────────────────────────────────────────────────────
+    function initSizeSelector() {
+        const sizeSelector = document.getElementById("size-selector");
+        if (!sizeSelector) return;
+
+        const sizeBtns = sizeSelector.querySelectorAll<HTMLButtonElement>(".size-btn");
+        const sizeHint = document.getElementById("size-hint");
+        const sizeError = document.getElementById("size-error");
+
+        sizeBtns.forEach((btn) => {
+            if (btn.dataset.available === "false") return; // skip unavailable
+            btn.addEventListener("click", () => {
+                // Deselect all
+                sizeBtns.forEach((b) => {
+                    b.style.backgroundColor = "";
+                    b.style.borderColor = "";
+                    b.style.fontWeight = "";
+                });
+                // Select this one
+                btn.style.backgroundColor = "rgba(104, 21, 10, 0.12)";
+                btn.style.borderColor = "rgba(104, 21, 10, 0.7)";
+                btn.style.fontWeight = "500";
+
+                // Update add-to-cart btn — query at click time so we always
+                // get the live node (even after cloneNode replacement)
+                const addBtn = document.getElementById("add-to-cart-btn") as HTMLButtonElement | null;
+                if (addBtn) {
+                    addBtn.dataset.variantId = btn.dataset.variantId ?? "";
+                    // Sync inventory limit to the selected size's stock
+                    addBtn.dataset.quantityAvailable = btn.dataset.qty ?? "";
+                }
+
+                // Hide error, update hint
+                if (sizeError) sizeError.classList.add("hidden");
+                if (sizeHint) sizeHint.textContent = btn.dataset.sizeLabel ?? "";
+
+                // Reset red border on selector
+                sizeSelector.style.borderColor = "";
+                sizeSelector.style.padding = "";
+                sizeSelector.style.borderRadius = "";
+                sizeSelector.style.borderWidth = "";
+                sizeSelector.style.borderStyle = "";
+            });
+        });
+    }
+
     function initAddToCart() {
         const btn = document.getElementById(
             "add-to-cart-btn"
@@ -396,6 +495,24 @@ const categoryQuote =
             const title = fresh.dataset.productTitle ?? "";
             const handle = fresh.dataset.productHandle ?? "";
             let variantId = fresh.dataset.variantId ?? "";
+            const hasSizes = fresh.dataset.hasSizes === "true";
+
+            // ── Validate size selection ──────────────────────────────────────
+            if (hasSizes && !variantId) {
+                const sizeSelector = document.getElementById("size-selector");
+                const sizeError = document.getElementById("size-error");
+                if (sizeSelector) {
+                    sizeSelector.style.borderStyle = "solid";
+                    sizeSelector.style.borderWidth = "1.5px";
+                    sizeSelector.style.borderColor = "rgb(239 68 68)";
+                    sizeSelector.style.borderRadius = "0.5rem";
+                    sizeSelector.style.padding = "0.75rem";
+                    // Scroll into view
+                    sizeSelector.scrollIntoView({ behavior: "smooth", block: "center" });
+                }
+                if (sizeError) sizeError.classList.remove("hidden");
+                return;
+            }
 
             // Build product data for the optimistic cart update
             const priceAmount = fresh.dataset.priceAmount ?? "";
@@ -450,8 +567,14 @@ const categoryQuote =
         });
     }
 
+    // initAddToCart must run first (clones the button), then initSizeSelector
+    // so that size clicks always find the live cloned node by ID
     initAddToCart();
-    document.addEventListener("astro:page-load", initAddToCart);
+    initSizeSelector();
+    document.addEventListener("astro:page-load", () => {
+        initAddToCart();
+        initSizeSelector();
+    });
 
     // ─── Skeleton de imagen principal ────────────────────────────────────────
     function initImageSkeleton() {

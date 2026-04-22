@@ -123,22 +123,51 @@ const categoryData = images.map((img) => ({
         </div>
     </div>
 
-    <div
-        class="absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 w-full p-6 md:p-10 lg:p-20 z-10 flex justify-between items-end text-white"
+    <!-- Título dinámico: independiente del contenedor de botones -->
+    <h2
+        id="dynamic-title"
+        class="absolute z-10 text-white
+               right-6 top-1/2 -translate-y-[200%]
+               md:right-20 lg:right-20 md:-translate-y-[125%] md:top-1/2
+               text-5xl md:text-9xl lg:text-8xl
+               transition-opacity duration-500 ease-in-out opacity-100"
     >
-        <CrystalButtonDark
-            id="rings-link"
-            text="Rings"
-            href="/category/rings"
-            className="w-fit"
-        />
-        <div class="flex flex-col gap-10 items-end">
-            <h2
-                id="dynamic-title"
-                class="absolute md:relative md:right-0 right-6 top-1/2 -translate-y-[200%] md:translate-y-0 text-5xl md:text-9xl lg:text-8xl transition-opacity duration-500 ease-in-out opacity-100"
-            >
-                {images[0].alt}
-            </h2>
+        {images[0].alt}
+    </h2>
+
+    <!-- Botones: mobile apilados abajo, tablet+ grid horizontal -->
+    <div
+        class="absolute left-1/2 -translate-x-1/2 w-full p-6 md:p-10 lg:p-20 z-10 text-white
+               bottom-28 md:bottom-auto md:top-1/2 -translate-y-1/2 md:-translate-y-[25%]
+               flex flex-col items-start gap-3
+               md:grid md:grid-cols-3 md:items-end md:gap-0"
+    >
+        <!-- Rings -->
+        <div class="flex justify-start">
+            <CrystalButtonDark
+                id="rings-link"
+                text="Rings"
+                href="/category/rings"
+                className="w-fit"
+            />
+        </div>
+
+        <!-- Earrings (center on tablet+) -->
+        <div class="flex md:justify-center">
+            {
+                validData.earrings?.products?.edges?.length > 0 && (
+                    <CrystalButtonDark
+                        id="earrings-link"
+                        text="Earrings"
+                        href="/category/earrings"
+                        className="w-fit"
+                    />
+                )
+            }
+        </div>
+
+        <!-- Necklaces (right on tablet+) -->
+        <div class="flex md:justify-end">
             <CrystalButtonDark
                 id="necklaces-link"
                 text="Necklaces"
@@ -207,7 +236,8 @@ const categoryData = images.map((img) => ({
 
     const initSwiper = () => {
         const section = document.querySelector("#categories");
-        const swiperEl = document.querySelector<HTMLElement>(".swiper-categories");
+        const swiperEl =
+            document.querySelector<HTMLElement>(".swiper-categories");
         const titleEl = document.querySelector("#dynamic-title");
         const linkEl = document.querySelector(
             "#necklaces-link",
@@ -221,7 +251,9 @@ const categoryData = images.map((img) => ({
         } else {
             // Reinit: destruir y restaurar HTML limpio
             if (categoriesSwiper) {
-                try { categoriesSwiper.destroy(true, false); } catch (_) {}
+                try {
+                    categoriesSwiper.destroy(true, false);
+                } catch (_) {}
                 categoriesSwiper = null;
             }
             swiperEl.innerHTML = originalCategoriesHTML;
@@ -265,7 +297,8 @@ const categoryData = images.map((img) => ({
                 slideChange: function () {
                     titleEl.classList.add("!opacity-0");
                     setTimeout(() => {
-                        const currentCat = categories[categoriesSwiper.realIndex];
+                        const currentCat =
+                            categories[categoriesSwiper.realIndex];
                         titleEl.textContent = currentCat.alt;
                         titleEl.classList.remove("!opacity-0");
                     }, 500);

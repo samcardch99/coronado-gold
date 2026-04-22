@@ -30,6 +30,10 @@ export async function getStaticPaths() {
             params: { category: "necklaces" },
             props: { title: "NECKLACES", handle: "necklaces", seoTitle: "Gold Necklaces — Handcrafted 14k & 18k Jewelry" },
         },
+        {
+            params: { category: "earrings" },
+            props: { title: "EARRINGS", handle: "earrings", seoTitle: "Gold Earrings — Handcrafted 14k & 18k Jewelry" },
+        },
     ];
 }
 
@@ -44,7 +48,7 @@ const STOREFRONT_ACCESS_TOKEN = import.meta.env.STOREFRONT_ACCESS_TOKEN;
 const query = `
   query getProductsByCollection($handle: String!) {
     collection(handle: $handle) {
-      products(first: 12) {
+      products(first: 250) {
         edges {
           node {
             id
