@@ -70,6 +70,9 @@ export async function getStaticPaths() {
                 kilates: metafield(namespace: "custom", key: "quilates") {
                   value
                 }
+                zirconia: metafield(namespace: "custom", key: "zirconia") {
+                  value
+                }
               }
             }
           }
@@ -99,6 +102,8 @@ const price = new Intl.NumberFormat("en-US", {
 }).format(parseFloat(product.priceRange.minVariantPrice.amount));
 
 const kilates = product.kilates?.value ?? null;
+const showZirconia = product.zirconia?.value !== "false";
+const showSpecs = !!kilates || showZirconia;
 
 // Variants / sizes
 const rawVariants = (product.variants?.edges ?? []).map((e: any) => e.node);
@@ -335,7 +340,7 @@ const categoryQuote =
                 )}
 
                 <!-- Specs table -->
-                {kilates && (
+                {showSpecs && (
                     <div class="mt-6">
                         <hr class="border-darkRed/25 mb-4" />
                         <!-- Header -->
@@ -345,10 +350,19 @@ const categoryQuote =
                         </div>
                         <hr class="border-darkRed/25" />
                         <!-- Row: Kilates -->
-                        <div class="grid grid-cols-2 gap-x-8 py-3">
-                            <p class="text-xs md-custom:text-[clamp(1rem, 0.5rem+0.1vw, 1.125rem)] md:text-xl lg:text-3xl tracking-[0.15em] ">K</p>
-                            <p class="text-xs md-custom:text-[clamp(1rem, 0.5rem+0.1vw, 1.125rem)] md:text-xl lg:text-3xl tracking-[0.15em] ">{kilates}</p>
-                        </div>
+                        {kilates && (
+                            <div class="grid grid-cols-2 gap-x-8 py-3">
+                                <p class="text-xs md-custom:text-[clamp(1rem, 0.5rem+0.1vw, 1.125rem)] md:text-xl lg:text-3xl tracking-[0.15em]">Metal</p>
+                                <p class="text-xs md-custom:text-[clamp(1rem, 0.5rem+0.1vw, 1.125rem)] md:text-xl lg:text-3xl tracking-[0.15em]">{kilates}K</p>
+                            </div>
+                        )}
+                        <!-- Row: Gemstone -->
+                        {showZirconia && (
+                            <div class="grid grid-cols-2 gap-x-8 py-3">
+                                <p class="text-xs md-custom:text-[clamp(1rem, 0.5rem+0.1vw, 1.125rem)] md:text-xl lg:text-3xl tracking-[0.15em]">Gemstone</p>
+                                <p class="text-xs md-custom:text-[clamp(1rem, 0.5rem+0.1vw, 1.125rem)] md:text-xl lg:text-3xl tracking-[0.15em]">Cubic Zirconia</p>
+                            </div>
+                        )}
                     </div>
                 )}
             </div>
