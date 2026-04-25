@@ -137,10 +137,12 @@ const categoryData = images.map((img) => ({
 
     <!-- Botones: mobile apilados abajo, tablet+ grid horizontal -->
     <div
+        id="category-buttons"
         class="absolute left-1/2 -translate-x-1/2 w-full p-6 md:p-10 lg:p-20 z-10 text-white
                bottom-28 md:bottom-auto md:top-1/2 -translate-y-1/2 md:-translate-y-[25%]
                flex flex-col items-start gap-3
-               md:grid md:grid-cols-3 md:items-end md:gap-0"
+               md:grid md:grid-cols-3 md:items-end md:gap-0
+               transition-all duration-500 ease-in-out"
     >
         <!-- Rings -->
         <div class="flex justify-start">

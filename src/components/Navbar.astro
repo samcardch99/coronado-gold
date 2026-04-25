@@ -8,14 +8,14 @@ import Cart from "../assets/carrito.svg";
 <a
   href="/"
   data-wordmark
-  class="fixed top-0 left-0 z-[460] hidden md:flex items-center p-16 lg:p-20 lg:pb-10 pb-8 h-auto text-darkRed transition-colors duration-500"
+  class="fixed top-0 left-0 z-[460] hidden md:flex items-center p-16 lg:p-20 lg:pb-10 pb-8 h-auto text-darkRed transition-all duration-500"
 >
   <Logo_Large class="h-12 md:w-110" />
 </a>
 
 <nav
   id="main-nav"
-  class="group text-darkRed w-full fixed top-0 z-400 transition-colors duration-500 backdrop-blur-xs mask-[linear-gradient(to_bottom,black_90%,transparent_100%)] p-8 md:p-16 lg:p-20 lg:pb-10 pb-8 flex justify-between items-center"
+  class="group text-darkRed w-full fixed top-0 z-400 transition-all duration-500 backdrop-blur-xs mask-[linear-gradient(to_bottom,black_90%,transparent_100%)] p-8 md:p-16 lg:p-20 lg:pb-10 pb-8 flex justify-between items-center"
 >
   <!-- Placeholder para mantener el espacio del logo en el flex layout -->
   <div class="h-12 md:w-110 hidden md:block shrink-0"></div>
@@ -99,7 +99,7 @@ import Cart from "../assets/carrito.svg";
   <!-- Modal box -->
   <div
     id="modal-box"
-    class="relative flex flex-col items-center justify-center py-10 px-8 md:p-12 w-[21rem] min-h-[21rem] md:w-[28rem] md:min-h-[28rem] lg:w-[34rem] lg:min-h-[34rem] h-fit rounded-[2rem] shadow-2xl transition-all duration-700 ease-in-out opacity-0 border border-white/20 bg-black/20 text-white"
+    class="relative flex flex-col items-center justify-center py-12 px-10 md:p-16 w-[25rem] min-h-[25rem] md:w-[34rem] md:min-h-[34rem] lg:w-[42rem] lg:min-h-[42rem] h-fit rounded-[2rem] shadow-2xl transition-all duration-700 ease-in-out opacity-0 border border-white/20 bg-black/20 text-white"
   >
     <!-- Close icon -->
     <button
@@ -115,7 +115,7 @@ import Cart from "../assets/carrito.svg";
         stroke-width="1.2"
         stroke-linecap="round"
         stroke-linejoin="round"
-        class="w-6 h-6 md:w-8 md:h-8"
+        class="w-8 h-8 md:w-10 md:h-10"
       >
         <line x1="18" y1="6" x2="6" y2="18"></line>
         <line x1="6" y1="6" x2="18" y2="18"></line>
@@ -124,7 +124,7 @@ import Cart from "../assets/carrito.svg";
 
     <!-- Links -->
     <div
-      class="flex flex-col items-center gap-5 md:gap-8 tracking-widest uppercase font-serif text-lg md:text-3xl lg:text-3xl mt-4"
+      class="flex flex-col items-center gap-6 md:gap-10 tracking-widest uppercase font-serif text-xl md:text-4xl lg:text-4xl mt-4"
     >
       <a
         href="/#home"
@@ -146,7 +146,7 @@ import Cart from "../assets/carrito.svg";
           Categories
           <svg
             id="tree-arrow"
-            class="w-4 h-4 md:w-6 md:h-6 transition-transform duration-300"
+            class="w-5 h-5 md:w-7 md:h-7 transition-transform duration-300"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -165,17 +165,17 @@ import Cart from "../assets/carrito.svg";
         >
           <a
             href="/category/rings"
-            class="nav-link hover:scale-110 transition-transform duration-300 mt-4 md:mt-5 text-sm md:text-xl lg:text-xl opacity-80 hover:opacity-100"
+            class="nav-link hover:scale-110 transition-transform duration-300 mt-4 md:mt-5 text-base md:text-2xl lg:text-2xl opacity-80 hover:opacity-100"
             >Rings</a
           >
           <a
             href="/category/necklaces"
-            class="nav-link hover:scale-110 transition-transform duration-300 text-sm md:text-xl lg:text-xl opacity-80 hover:opacity-100"
+            class="nav-link hover:scale-110 transition-transform duration-300 text-base md:text-2xl lg:text-2xl opacity-80 hover:opacity-100"
             >Necklaces</a
           >
           <a
             href="/category/earrings"
-            class="nav-link hover:scale-110 transition-transform duration-300 mb-2 md:mb-2 text-sm md:text-xl lg:text-xl opacity-80 hover:opacity-100"
+            class="nav-link hover:scale-110 transition-transform duration-300 mb-2 md:mb-2 text-base md:text-2xl lg:text-2xl opacity-80 hover:opacity-100"
             >Earrings</a
           >
         </div>
@@ -261,19 +261,38 @@ import Cart from "../assets/carrito.svg";
   const treeArrow = document.getElementById("tree-arrow");
 
   let isModalOpen = false;
+  let currentSectionIsTransparent = true; // home es la primera sección
 
   function toggleModal() {
     if (!modalNav || !modalBox || !modalOverlay) return;
     isModalOpen = !isModalOpen;
 
+    const floatingBar = document.getElementById("nav-container");
+
     if (isModalOpen) {
       modalNav.classList.remove("pointer-events-none");
       modalOverlay.classList.remove("opacity-0");
       modalBox.classList.remove("opacity-0");
+
+      // En secciones transparentes, ocultar navbar, floating bar y botones de categorías
+      if (currentSectionIsTransparent) {
+        nav?.classList.add("opacity-0", "pointer-events-none");
+        wordmark?.classList.add("opacity-0", "pointer-events-none");
+        floatingBar?.classList.add("opacity-0", "translate-y-10", "pointer-events-none", "scale-95");
+        document.getElementById("category-buttons")?.classList.add("opacity-0", "pointer-events-none");
+        document.getElementById("dynamic-title")?.classList.add("opacity-0", "pointer-events-none");
+      }
     } else {
       modalNav.classList.add("pointer-events-none");
       modalOverlay.classList.add("opacity-0");
       modalBox.classList.add("opacity-0");
+
+      // Restaurar navbar, floating bar y botones de categorías
+      nav?.classList.remove("opacity-0", "pointer-events-none");
+      wordmark?.classList.remove("opacity-0", "pointer-events-none");
+      floatingBar?.classList.remove("opacity-0", "translate-y-10", "pointer-events-none", "scale-95");
+      document.getElementById("category-buttons")?.classList.remove("opacity-0", "pointer-events-none");
+      document.getElementById("dynamic-title")?.classList.remove("opacity-0", "pointer-events-none");
 
       // Reseteamos el árbol de categorías al cerrar
       if (treeChildren && treeArrow) {
@@ -327,6 +346,7 @@ import Cart from "../assets/carrito.svg";
 
           if (entry.target.id === "home") {
             // Home (Portada)
+            currentSectionIsTransparent = true;
             modalBox.classList.add(
               "backdrop-blur-xl",
               "bg-white/10",
@@ -337,6 +357,7 @@ import Cart from "../assets/carrito.svg";
             modalOverlay.classList.add("bg-black/10");
           } else if (entry.target.id === "categories") {
             // Categories
+            currentSectionIsTransparent = true;
             modalBox.classList.add(
               "backdrop-blur-xl",
               "bg-white/10",
@@ -347,6 +368,7 @@ import Cart from "../assets/carrito.svg";
             modalOverlay.classList.add("bg-black/10");
           } else {
             // Solid Theme
+            currentSectionIsTransparent = false;
             modalBox.classList.add("bg-black/10", "text-white");
             modalOverlay.classList.remove("bg-black/10");
             modalOverlay.classList.add("bg-[#D4CEC7]");
