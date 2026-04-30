@@ -123,25 +123,54 @@ const categoryData = images.map((img) => ({
         </div>
     </div>
 
-    <!-- Título dinámico: independiente del contenedor de botones -->
+    <!-- MOBILE: columna única con título arriba-derecha y botones abajo-izquierda -->
+    <div class="md:hidden absolute z-10 top-1/2 -translate-y-1/2 left-0 right-0 px-6 flex flex-col gap-4 text-white">
+        <h2
+            id="dynamic-title-mobile"
+            class="text-5xl text-right self-end transition-opacity duration-500 ease-in-out opacity-100"
+        >
+            {images[0].alt}
+        </h2>
+        <div class="flex flex-col items-start gap-3">
+            <CrystalButtonDark
+                text="Rings"
+                href="/category/rings"
+                className="w-fit"
+            />
+            {
+                validData.earrings?.products?.edges?.length > 0 && (
+                    <CrystalButtonDark
+                        text="Earrings"
+                        href="/category/earrings"
+                        className="w-fit"
+                    />
+                )
+            }
+            <CrystalButtonDark
+                text="Necklaces"
+                href="/category/necklaces"
+                className="w-fit"
+            />
+        </div>
+    </div>
+
+    <!-- TABLET+: título dinámico independiente -->
     <h2
         id="dynamic-title"
-        class="absolute z-10 text-white
-               right-6 top-1/2 -translate-y-[200%]
+        class="hidden md:block absolute z-10 text-white
                md:right-20 lg:right-20 md:-translate-y-[125%] md:top-1/2
-               text-5xl md:text-9xl lg:text-8xl
+               md:text-9xl lg:text-8xl
                transition-opacity duration-500 ease-in-out opacity-100"
     >
         {images[0].alt}
     </h2>
 
-    <!-- Botones: mobile apilados abajo, tablet+ grid horizontal -->
+    <!-- TABLET+: botones en grid horizontal -->
     <div
         id="category-buttons"
-        class="absolute left-1/2 -translate-x-1/2 w-full p-6 md:p-10 lg:p-20 z-10 text-white
-               bottom-28 md:bottom-auto md:top-1/2 -translate-y-1/2 md:-translate-y-[25%]
-               flex flex-col items-start gap-3
-               md:grid md:grid-cols-3 md:items-end md:gap-0
+        class="hidden md:grid absolute left-1/2 -translate-x-1/2 w-full md:p-10 lg:p-20 z-10 text-white
+               md:top-1/2 md:-translate-y-[25%]
+               md:grid-cols-3 md:items-end md:gap-0
                transition-all duration-500 ease-in-out"
     >
         <!-- Rings -->
@@ -241,6 +270,7 @@ const categoryData = images.map((img) => ({
         const swiperEl =
             document.querySelector<HTMLElement>(".swiper-categories");
         const titleEl = document.querySelector("#dynamic-title");
+        const titleMobEl = document.querySelector("#dynamic-title-mobile");
         const linkEl = document.querySelector(
             "#necklaces-link",
         ) as HTMLAnchorElement;
@@ -298,11 +328,16 @@ const categoryData = images.map((img) => ({
             on: {
                 slideChange: function () {
                     titleEl.classList.add("!opacity-0");
+                    if (titleMobEl) titleMobEl.classList.add("!opacity-0");
                     setTimeout(() => {
                         const currentCat =
                             categories[categoriesSwiper.realIndex];
                         titleEl.textContent = currentCat.alt;
                         titleEl.classList.remove("!opacity-0");
+                        if (titleMobEl) {
+                            titleMobEl.textContent = currentCat.alt;
+                            titleMobEl.classList.remove("!opacity-0");
+                        }
                     }, 500);
                 },
             },
