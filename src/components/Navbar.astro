@@ -199,6 +199,45 @@ import Cart from "../assets/carrito.svg";
   const nav = document.getElementById("main-nav");
   const wordmark = document.querySelector<HTMLElement>("a[data-wordmark]");
 
+  // ── Navbar sin scrim sobre la portada ────────────────────────────────────
+  // Mientras el hero está detrás del navbar lo queremos 100% transparente:
+  // la textura de la portada debe leerse limpia de borde a borde.
+  const heroSection = document.getElementById("home");
+  const NAV_SCRIM = [
+    "backdrop-blur-xs",
+    "mask-[linear-gradient(to_bottom,black_90%,transparent_100%)]",
+  ];
+
+  if (nav) {
+    const heroCoversNav = () =>
+      !!heroSection &&
+      heroSection.getBoundingClientRect().bottom > nav.offsetHeight;
+
+    let ticking = false;
+
+    const syncNavScrim = () => {
+      ticking = false;
+      const overHero = heroCoversNav();
+      NAV_SCRIM.forEach((cls) => nav.classList.toggle(cls, !overHero));
+    };
+
+    const requestNavScrimSync = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(syncNavScrim);
+    };
+
+    // Primer cálculo sin transición, para que el scrim no se vea desvanecer al cargar.
+    const prevTransition = nav.style.transition;
+    nav.style.transition = "none";
+    syncNavScrim();
+    void nav.offsetHeight; // fuerza reflow
+    nav.style.transition = prevTransition;
+
+    window.addEventListener("scroll", requestNavScrimSync, { passive: true });
+    window.addEventListener("resize", requestNavScrimSync);
+  }
+
   // Observe the categories section for color changing
   const categoriesSection = document.getElementById("categories");
 
